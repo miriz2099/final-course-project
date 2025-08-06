@@ -4,30 +4,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>my shop</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+    <div class="wrapper">
+        <header class="main-header">
 
-    <nav>
+            <!-- Logo on the left -->
+            <div class="logo">🛍️ MyShop</div>
 
-    </nav>
-    <main>
+            <!-- Search bar in the middle -->
+            <input type="text" id="search-input" placeholder="search products..." class="search-bar">
+            <!-- Icons on the right -->
+            <div class="icons">
+                <a href="/login" class="icon">
+                    <img src="user.png" alt="User" />
+                </a>
+                <a href="/cart" class="icon">
+                    <img src="shopping-cart.png" alt="Shopping Cart" />
+                </a>
+                <nav>
+                    <img src="menu.png" alt="Menu" />
+                </nav>
+            </div>
 
-        <section>
-            sale
-        </section>
-        <section>cat 1</section>
+        </header>
 
-        <section>cat 2</section>
+        <main>
+            <div id="results"></div>
+            <section>
+                מודעות
+            </section>
+            <section>קטגוריה 1
+            </section>
 
-        <section>cat 3</section>
+            <section>קטגוריה 2</section>
 
-    </main>
-    <footer>
-        <div></div>
-        <div></div>
-    </footer>
+            <section>קטגוריה 3</section>
+
+
+        </main>
+        <footer>
+            <div></div>
+            <div></div>
+        </footer>
+
+    </div>
 </body>
+
+<script src="script.js"></script>
 
 </html>

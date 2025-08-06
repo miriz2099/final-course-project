@@ -1,0 +1,98 @@
+   * {
+       box-sizing: border-box;
+   }
+
+
+   body {
+       font-family: Arial, sans-serif;
+       margin: 0;
+       padding: 0;
+       box-sizing: border-box;
+   }
+
+   html,
+   body {
+       height: 100%;
+       margin: 0;
+   }
+
+   .wrapper {
+       min-height: 100%;
+       display: flex;
+       flex-direction: column;
+   }
+
+   header {
+       background-color: #f8f8f8;
+       padding: 10px 20px;
+       display: flex;
+       justify-content: space-between;
+       align-items: center;
+   }
+
+   header.main-header {
+       position: fixed;
+       top: 0;
+       left: 0;
+       width: 100vw;
+       z-index: 1000;
+       display: flex;
+       align-items: center;
+       justify-content: space-between;
+       padding: 10px 20px;
+       background-color: #ffffff;
+       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+   }
+
+   main {
+       padding: 20px;
+       margin-top: 80px;
+       /* Adjust based on header height */
+   }
+
+   .logo {
+       font-size: 24px;
+       font-weight: bold;
+       color: #007bff;
+   }
+
+   .search-bar {
+       flex: 1;
+       margin: 0 20px;
+       padding: 8px 12px;
+       border-radius: 20px;
+       border: 1px solid #ccc;
+       font-size: 16px;
+   }
+
+   .icons {
+       display: flex;
+       align-items: center;
+       gap: 15px;
+   }
+
+   .icons img,
+   nav img {
+       width: 24px;
+       height: 24px;
+       cursor: pointer;
+   }
+
+   /* מרווח מתחת להדר כדי שלא יכסה את התוכן */
+   .page-content {
+       margin-top: 80px;
+       /* הגובה של ההדר + רווח */
+       padding: 20px;
+   }
+
+   footer {
+       position: fixed;
+       bottom: 0;
+       left: 0;
+       width: 100%;
+       background-color: #7e7d7d;
+       text-align: center;
+       padding: 10px;
+       box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1);
+       z-index: 999;
+   }
