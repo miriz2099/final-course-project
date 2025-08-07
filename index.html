@@ -6,54 +6,201 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>my shop</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
 </head>
 
 <body>
     <div class="wrapper">
         <header class="main-header">
 
-            <!-- Logo on the left -->
-            <div class="logo">🛍️ MyShop</div>
+            <div id="header-content">
+                <div id="logo">🛍️ MyShop</div>
 
-            <!-- Search bar in the middle -->
-            <input type="text" id="search-input" placeholder="search products..." class="search-bar">
-            <!-- Icons on the right -->
-            <div class="icons">
-                <a href="/login" class="icon">
-                    <img src="user.png" alt="User" />
-                </a>
-                <a href="/cart" class="icon">
-                    <img src="shopping-cart.png" alt="Shopping Cart" />
-                </a>
-                <nav>
-                    <img src="menu.png" alt="Menu" />
-                </nav>
+                <!-- <div> -->
+                <input type="text" id="search-input" placeholder="search products..." class="search-bar">
+
+                <div class="icons">
+                    <div class="icon">
+                        <img id="userIcon" src="user.png" alt="User" />
+                    </div>
+                    <div class="icon">
+                        <img src="shopping-cart.png" alt="Shopping Cart" />
+                    </div>
+                    <nav>
+                        <img src="menu.png" alt="Menu" />
+                    </nav>
+                </div>
+
+                <!-- </div> -->
             </div>
 
+
+            <div id="categories-menu">
+
+
+                <li class="menu-item has-submenu">
+                    <a href="#">women</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-category="womens-bags">womens-bags</a></li>
+                        <li><a href="#" data-category="womens-dresses">womens-dresses</a></li>
+                        <li><a href="#" data-category="womens-jewellery">womens-jewellery</a></li>
+                        <li><a href="#" data-category="womens-shoes">womens-shoes</a></li>
+                        <li><a href="#" data-category="womens-watches">womens-watches</a></li>
+                    </ul>
+                </li>
+
+                <li class="menu-item has-submenu">
+                    <a href="#">men</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-category="mens-shoes">mens-shoes</a></li>
+                        <li><a href="#" data-category="mens-watches">mens-watches</a></li>
+                        <li><a href="#" data-category="mens-shirts">mens-shirts</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item has-submenu">
+                    <a href="#">beauty</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-category="beauty">beauty</a></li>
+                        <li><a href="#" data-category="fragrances">fragrances</a></li>
+                        <li><a href="#" data-category="skin-care">skin-care</a></li>
+                    </ul>
+                </li>
+                <li class="menu-item has-submenu">
+                    <a href="#">Electronics</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-category="laptops">Laptops</a></li>
+                        <li><a href="#" data-category="tablets">tablets</a></li>
+                        <li><a href="#" data-category="smartphones">smartphones</a></li>
+                        <li><a href="#" data-category="mobile-accessories">mobile-accessories</a></li>
+                    </ul>
+                </li>
+
+                <li class="menu-item has-submenu">
+                    <a href="#">home</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-category="furniture">furniture</a></li>
+                        <li><a href="#" data-category="home-decoration">home-decoration</a></li>
+                        <li><a href="#" data-category="kitchen-accessories">kitchen-accessories</a></li>
+                        <li><a href="#" data-category="groceries">groceries</a></li>
+                    </ul>
+                </li>
+
+                <li class="menu-item has-submenu">
+                    <a href="#">other</a>
+                    <ul class="submenu">
+                        <li><a href="#" data-category="motorcycle">motorcycle</a></li>
+                        <li><a href="#" data-category="sports-accessories">sports-accessories</a></li>
+                    </ul>
+                </li>
+            </div>
+
+            <div id="category-products"></div>
+
+
+
+
         </header>
-
         <main>
-            <div id="results"></div>
-            <section>
-                מודעות
-            </section>
-            <section>קטגוריה 1
+
+
+
+            <section id="home-page">
+
+                <section>
+                    מודעות
+                </section>
+                <section>קטגוריה 1
+                </section>
+
+                <section>קטגוריה 2</section>
+
+                <section>קטגוריה 3</section>
+
+
             </section>
 
-            <section>קטגוריה 2</section>
+            <section id="results"></section>
 
-            <section>קטגוריה 3</section>
+            <section id="shopping-cart"></section>
+            <section id="checkout-page"></section>
+            <section id="order-confirmation"></section>
+
+            <section id="login-page" class="popup hidden">
+
+                <form id="login-form">
+                    <input type="email" id="loginEmail" placeholder="email" required />
+                    <div class="password-wrapper">
+                        <input type="password" id="loginPassword" placeholder="password" required />
+                        <button type="button" id="togglePassword">Show</button>
+                    </div>
+                    <button type="submit">Login</button>
+                </form>
+
+                <p>Don't have an account? <a href="#" id="show-register">Sign Up</a></p>
+
+            </section>
+            <section id="register-page" class="popup hidden">
+
+                <h2>Sign Up</h2>
+                <form id="signup-form">
+                    <label for="name">full name:</label>
+                    <input type="text" id="name" required>
+
+                    <label for="email">email:</label>
+                    <input type="email" id="email" required>
+
+                    <label for="address">shipping address:</label>
+                    <input type="text" id="address" required>
+
+                    <label for="password">password:</label>
+                    <input type="password" id="password" required>
+
+                    <button type="submit">Sign Up</button>
+                </form>
+
+                <p>Already registered? <a href="#" id="show-login">Login</a></p>
+            </section>
+
 
 
         </main>
         <footer>
-            <div></div>
-            <div></div>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>contact us</h3>
+                    <p><i class="fas fa-phone"></i> 02-99680269</p>
+                    <p><i class="fas fa-envelope"></i> info@digitalstore.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> israel, tel aviv</p>
+                </div>
+                <div class="footer-section">
+                    <h3>customer service</h3>
+                    <ul>
+                        <li><a href="#">Return Policy</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Shipping</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Follow Us</h3>
+                    <div class="social">
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Digital Store.
+                    All rights reserved</p>
+            </div>
         </footer>
 
     </div>
 </body>
 
-<script src="script.js"></script>
+<script src="script.js" defer></script>
 
 </html>
