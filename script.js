@@ -1,9 +1,10 @@
 let currentCategory = null;
 let lastView = null;
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
-let currentUser = null;
+
 let isLoggedIn = false;
 let loggedInEmail = "";
+// let currentUser = null;
 // -----------------------------------------------------------------------------------------------------------------------
 
 const logo = document.getElementById("logo");
@@ -27,193 +28,93 @@ const cartIcon = document.getElementById("cartIcon");
 const cartContainer = document.getElementById("shopping-cart");
 
 // -----------------------------------------------------------------------------------------------------------------------
-function showPaymentForm() {
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
+function showUserProfile() {
+  hideHomePage();
 
-  const formHtml = `
-    <div id="paymentForm" >
-      <h3>פרטי תשלום</h3>
-      <label>שם מלא:<br><input type="text" id="fullName" required></label><br><br>
-      <label>טלפון:<br><input type="tel" id="phone" required></label><br><br>
-      <label>כתובת למשלוח:<br><textarea id="address" rows="3" required></textarea></label><br><br>
-      
-      <h4>פרטי כרטיס אשראי</h4>
-      <label>מספר כרטיס:<br><input type="text" id="cardNumber" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" required></label><br><br>
-      <label>תוקף (MM/YY):<br><input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required></label><br><br>
-      <label>CVV:<br><input type="password" id="cvv" maxlength="4" placeholder="123" required></label><br><br>
-
-      <p><strong>סה"כ לתשלום:</strong> $${totalPrice.toFixed(2)}</p>
-
-      <button id="payBtn">שלם</button>
-      <button id="cancelPaymentBtn" style="margin-left:10px;">ביטול</button>
-    </div>
-  `;
-
-  resultsDiv.innerHTML = formHtml;
-  console.log("cart----------", cart);
-
-  document.getElementById("payBtn").addEventListener("click", () => {
-    const name = document.getElementById("fullName").value.trim();
-    const phone = document.getElementById("phone").value.trim();
-    const address = document.getElementById("address").value.trim();
-    const cardNumber = document
-      .getElementById("cardNumber")
-      .value.replace(/\s+/g, "");
-    const expiry = document.getElementById("expiry").value.trim();
-    const cvv = document.getElementById("cvv").value.trim();
-    console.log("cart", cart);
-    // בדיקות בסיסיות:
-    if (!name || !phone || !address || !cardNumber || !expiry || !cvv) {
-      alert("אנא מלא את כל השדות");
-      return;
-    }
-
-    if (!/^\d{16}$/.test(cardNumber)) {
-      alert("מספר כרטיס לא חוקי. יש להזין 16 ספרות.");
-      return;
-    }
-
-    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
-      alert("פורמט תוקף לא חוקי. יש להזין MM/YY.");
-      return;
-    }
-
-    if (!/^\d{3,4}$/.test(cvv)) {
-      alert("CVV לא חוקי. יש להזין 3 או 4 ספרות.");
-      return;
-    }
-
-    // כאן אפשר להוסיף טיפול תשלום אמיתי
-    console.log("תשלום מתבצע עם הפרטים הבאים:", cart);
-    // תשלום הושלם - הצג קבלה
-    showReceipt({ fullName: name, phone, address }, cart, totalPrice);
-  });
-
-  document.getElementById("cancelPaymentBtn").addEventListener("click", () => {
-    displayCartInResults(); // חוזר לעגלת הקניות
-  });
-
-  // עיצוב אוטומטי למספר כרטיס - להוסיף רווח כל 4 ספרות
-  const cardInput = document.getElementById("cardNumber");
-  cardInput.addEventListener("input", (e) => {
-    let value = e.target.value.replace(/\D/g, "").substring(0, 16);
-    let formatted = value.replace(/(.{4})/g, "$1 ").trim();
-    e.target.value = formatted;
-  });
-}
-
-function showReceipt(userInfo, cartItems, totalPrice) {
-  let receiptHtml = `
-    <div id="receipt">
-      <h2>קבלה</h2>
-      <p><strong>שם:</strong> ${
-        userInfo.fullName || loggedInEmail || "משתמש לא מזוהה"
-      }</p>
-      ${
-        userInfo.phone ? `<p><strong>טלפון:</strong> ${userInfo.phone}</p>` : ""
-      }
-      ${
-        userInfo.address
-          ? `<p><strong>כתובת:</strong> ${userInfo.address}</p>`
-          : ""
-      }
-      <hr>
-      <h3>פרטי ההזמנה:</h3>
-      <ul>
-  `;
-  console.log(cartItems);
-  cartItems.forEach((item) => {
-    receiptHtml += `<li>${item.title} - כמות: ${item.quantity} - מחיר יחידה: $${item.price}</li>`;
-  });
-
-  receiptHtml += `
-      </ul>
-      <hr>
-      <p><strong>סה"כ לתשלום:</strong> $${totalPrice.toFixed(2)}</p>
-      <button id="backToShopBtn">חזרה לחנות</button>
-    </div>
-  `;
-
-  resultsDiv.innerHTML = receiptHtml;
-
-  document.getElementById("backToShopBtn").addEventListener("click", () => {
-    // נקה עגלה אם רוצים, או תשאירי לפי הלוגיקה שלך
-
-    cart = [];
-    localStorage.removeItem("cart");
-
-    displayCartInResults();
-    updateCartCount();
-    window.location.href = "index.html";
-  });
-}
-
-async function saveOrderForUser(email, cartItems) {
-  if (!email || !cartItems || cartItems.length === 0) {
-    console.error("אין מייל או עגלה ריקה");
+  if (!isLoggedIn) {
+    resultsDiv.innerHTML = "<p>אנא התחבר כדי לצפות בפרופיל שלך.</p>";
     return;
   }
 
-  try {
-    // 1. קבלת כל המשתמשים מהבין
-    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-      headers: {
-        "X-Master-Key": API_KEY,
-      },
-    });
-    const data = await res.json();
-    const users = data.record.users;
+  // שליפת המשתמש מה-localStorage (כולל רכישות קודמות)
+  const currentUserData = JSON.parse(localStorage.getItem("currentUser")) || {};
+  const purchases = currentUserData.purchases || [];
 
-    // 2. עדכון המשתמש המתאים
-    const updatedUsers = users.map((user) => {
-      if (user.email === email) {
-        // הוספת רכישה חדשה ל-purchases
-        const newPurchases = user.purchases ? [...user.purchases] : [];
-
-        // אפשר להוסיף גם תאריך ההזמנה
-        // const order = {
-        //   id: Date.now(), // מזהה ייחודי להזמנה
-        //   date: new Date().toISOString(),
-        //   items: cartItems,
-        // };
-
-        newPurchases.push(cartItems);
-
-        // ריקון העגלה
-        return { ...user, purchases: newPurchases, cart: [] };
-      }
-      return user;
-    });
-
-    // 3. שמירה חזרה לבין
-    const putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Master-Key": API_KEY,
-      },
-      body: JSON.stringify({ users: updatedUsers }),
-    });
-
-    if (!putRes.ok) {
-      throw new Error("שגיאה בשמירת ההזמנה בבין");
-    }
-
-    console.log("ההזמנה נשמרה בהצלחה!");
-
-    // 4. עדכון המשתמש בקוד שלך (ריקון העגלה גם בזיכרון)
-    updateCartCount();
-
-    // אפשר גם לעדכן currentUser
-    const updatedUser = updatedUsers.find((u) => u.email === email);
-    currentUser = updatedUser;
-    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
-  } catch (error) {
-    console.error("שגיאה בשמירת ההזמנה:", error);
+  console.log(purchases);
+  const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
+  const userCart = cart || [];
+  let cartHtml = "";
+  if (Array.isArray(userCart) && userCart.length > 0) {
+    cartHtml = userCart
+      .map(
+        (item) => `
+      <div class="cart-item">
+        <img src="${item.thumbnail}" alt="${item.title}" style="width:50px; height:50px;">
+        <span>${item.title}</span>
+        <span>כמות: ${item.quantity}</span>
+        <span>מחיר: $${item.price}</span>
+      </div>
+    `
+      )
+      .join("");
+    cartHtml += `
+       <div class="cart-actions" style="margin-top: 15px;">
+        <button id="checkoutButton" style="padding:10px 20px; background-color:green; color:white; border:none; cursor:pointer;">
+        לתשלום
+      </button>
+     </div>
+`;
+  } else {
+    cartHtml = "<p>העגלה ריקה</p>";
   }
+
+  let purchasesHtml = "";
+  if (purchases.length === 0) {
+    purchasesHtml = "<p>אין הזמנות קודמות.</p>";
+  } else {
+    purchasesHtml = `
+      <div class="purchases-container">
+        ${purchases
+          .map(
+            (order, index) => `
+            <div class="order">
+              <h4>הזמנה #${index + 1}</h4>
+              <ul>
+                ${order
+                  .map(
+                    (item) =>
+                      `<li> <div class="cart-item">
+                          <img src="${item.thumbnail}" alt="${item.title}" style="width:50px; height:50px;">
+                          <span>${item.title}</span>
+                          <span>כמות: ${item.quantity}</span>
+                           <span>מחיר: $${item.price}</span></div>
+                    
+                    </li>`
+                  )
+                  .join("")}
+              </ul>
+            </div>
+          `
+          )
+          .join("")}
+      </div>
+    `;
+  }
+
+  resultsDiv.innerHTML = `
+    <h2>ברוך הבא, ${loggedInEmail}</h2>
+    <h3>🛒 העגלה הנוכחית</h3>
+    ${cartHtml}
+    <h3>📦 ההזמנות הקודמות שלך</h3>
+    ${purchasesHtml}
+  `;
+  document
+    .getElementById("checkoutButton")
+    .addEventListener("click", function () {
+      showPaymentForm(); // כאן את קוראת לפונקציה שלך
+
+      saveOrderForUser(loggedInEmail, cart);
+    });
 }
 
 //------------------------------------------------------------------------------------------------------------------------
@@ -272,9 +173,13 @@ function checkUserLogin() {
 }
 
 //all about log in and sign up
-// userIcon.addEventListener("click", () => {
-//   registerSection.classList.toggle("hidden");
-// });
+userIcon.addEventListener("click", () => {
+  if (!isLoggedIn) {
+    return;
+  } else {
+    showUserProfile();
+  }
+});
 showLoginLink.addEventListener("click", (e) => {
   e.preventDefault();
   register.classList.add("hidden");
@@ -389,7 +294,7 @@ async function loginUser(e) {
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
       isLoggedIn = true;
       loggedInEmail = foundUser.email;
-      currentUser = foundUser;
+      // currentUser = foundUser;
       console.log(foundUser);
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       const serverCart = foundUser.cart || [];
@@ -443,8 +348,34 @@ document.addEventListener("DOMContentLoaded", function () {
   checkUserLogin();
   displayUserName();
   updateCartCount();
+  if (isLoggedIn) {
+    loadCartFromBin();
+  }
 });
 
+async function loadCartFromBin() {
+  if (!isLoggedIn) return;
+
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      headers: {
+        "X-Master-Key": API_KEY,
+      },
+    });
+    const data = await res.json();
+    const users = data.record.users;
+    const user = users.find((u) => u.email === loggedInEmail);
+    if (user && user.cart) {
+      cart = user.cart;
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartCount();
+      console.log("Cart loaded from bin:", cart);
+    }
+  } catch (err) {
+    console.error("Error loading cart from bin:", err);
+  }
+}
+//------------==================================================================================================
 function initializeApp() {
   showHomePage();
 }
@@ -620,6 +551,7 @@ async function saveCart() {
       });
 
       console.log("הסל נשמר בבין למשתמש", loggedInEmail);
+      localStorage.setItem("cart", JSON.stringify(cart)); // עדכון בלוקל
       updateCartCount();
     } catch (err) {
       console.error("שגיאה בשמירת הסל לבין:", err);
@@ -700,15 +632,11 @@ function displayCartInResults() {
       return;
     }
 
-    console.log(isLoggedIn, loggedInEmail, currentUser);
+    // console.log(isLoggedIn, loggedInEmail, currentUser);
     if (!isLoggedIn) {
       // משתמש לא מחובר - נפתח טופס למילוי פרטים
       showPaymentForm();
     } else {
-      // משתמש מחובר - שמור הזמנה ואז הצג קבלה
-      console.log("שומר הזמנה למשתמש", loggedInEmail, currentUser);
-      console.log(cart);
-
       showPaymentForm();
       saveOrderForUser(loggedInEmail, cart);
     }
@@ -737,6 +665,189 @@ function removeFromCartById(productId) {
     saveCart();
     displayCartInResults();
     updateCartCount();
+  }
+}
+//-------------------------------------------------------------------------------------------------------------------------
+
+function showPaymentForm() {
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+
+  const formHtml = `
+    <div id="paymentForm" >
+      <h3>פרטי תשלום</h3>
+      <label>שם מלא:<br><input type="text" id="fullName" required></label><br><br>
+      <label>טלפון:<br><input type="tel" id="phone" required></label><br><br>
+      <label>כתובת למשלוח:<br><textarea id="address" rows="3" required></textarea></label><br><br>
+      
+      <h4>פרטי כרטיס אשראי</h4>
+      <label>מספר כרטיס:<br><input type="text" id="cardNumber" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" required></label><br><br>
+      <label>תוקף (MM/YY):<br><input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required></label><br><br>
+      <label>CVV:<br><input type="password" id="cvv" maxlength="4" placeholder="123" required></label><br><br>
+
+      <p><strong>סה"כ לתשלום:</strong> $${totalPrice.toFixed(2)}</p>
+
+      <button id="payBtn">שלם</button>
+      <button id="cancelPaymentBtn" style="margin-left:10px;">ביטול</button>
+    </div>
+  `;
+
+  resultsDiv.innerHTML = formHtml;
+  console.log("cart----------", cart);
+
+  document.getElementById("payBtn").addEventListener("click", () => {
+    const name = document.getElementById("fullName").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const address = document.getElementById("address").value.trim();
+    const cardNumber = document
+      .getElementById("cardNumber")
+      .value.replace(/\s+/g, "");
+    const expiry = document.getElementById("expiry").value.trim();
+    const cvv = document.getElementById("cvv").value.trim();
+    console.log("cart", cart);
+    // בדיקות בסיסיות:
+    if (!name || !phone || !address || !cardNumber || !expiry || !cvv) {
+      alert("אנא מלא את כל השדות");
+      return;
+    }
+
+    if (!/^\d{16}$/.test(cardNumber)) {
+      alert("מספר כרטיס לא חוקי. יש להזין 16 ספרות.");
+      return;
+    }
+
+    if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
+      alert("פורמט תוקף לא חוקי. יש להזין MM/YY.");
+      return;
+    }
+
+    if (!/^\d{3,4}$/.test(cvv)) {
+      alert("CVV לא חוקי. יש להזין 3 או 4 ספרות.");
+      return;
+    }
+
+    // כאן אפשר להוסיף טיפול תשלום אמיתי
+    console.log("תשלום מתבצע עם הפרטים הבאים:", cart);
+    // תשלום הושלם - הצג קבלה
+    showReceipt({ fullName: name, phone, address }, cart, totalPrice);
+  });
+
+  document.getElementById("cancelPaymentBtn").addEventListener("click", () => {
+    displayCartInResults(); // חוזר לעגלת הקניות
+  });
+
+  // עיצוב אוטומטי למספר כרטיס - להוסיף רווח כל 4 ספרות
+  const cardInput = document.getElementById("cardNumber");
+  cardInput.addEventListener("input", (e) => {
+    let value = e.target.value.replace(/\D/g, "").substring(0, 16);
+    let formatted = value.replace(/(.{4})/g, "$1 ").trim();
+    e.target.value = formatted;
+  });
+}
+
+function showReceipt(userInfo, cartItems, totalPrice) {
+  let receiptHtml = `
+    <div id="receipt">
+      <h2>קבלה</h2>
+      <p><strong>שם:</strong> ${
+        userInfo.fullName || loggedInEmail || "משתמש לא מזוהה"
+      }</p>
+      ${
+        userInfo.phone ? `<p><strong>טלפון:</strong> ${userInfo.phone}</p>` : ""
+      }
+      ${
+        userInfo.address
+          ? `<p><strong>כתובת:</strong> ${userInfo.address}</p>`
+          : ""
+      }
+      <hr>
+      <h3>פרטי ההזמנה:</h3>
+      <ul>
+  `;
+  console.log(cartItems);
+  cartItems.forEach((item) => {
+    receiptHtml += `<li>${item.title} - כמות: ${item.quantity} - מחיר יחידה: $${item.price}</li>`;
+  });
+
+  receiptHtml += `
+      </ul>
+      <hr>
+      <p><strong>סה"כ לתשלום:</strong> $${totalPrice.toFixed(2)}</p>
+      <button id="backToShopBtn">חזרה לחנות</button>
+    </div>
+  `;
+
+  resultsDiv.innerHTML = receiptHtml;
+
+  document.getElementById("backToShopBtn").addEventListener("click", () => {
+    // נקה עגלה אם רוצים, או תשאירי לפי הלוגיקה שלך
+
+    cart = [];
+    localStorage.removeItem("cart");
+
+    displayCartInResults();
+    updateCartCount();
+    window.location.href = "index.html";
+  });
+}
+
+async function saveOrderForUser(email, cartItems) {
+  if (!email || !cartItems || cartItems.length === 0) {
+    console.error("אין מייל או עגלה ריקה");
+    return;
+  }
+
+  try {
+    // 1. קבלת כל המשתמשים מהבין
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      headers: {
+        "X-Master-Key": API_KEY,
+      },
+    });
+    const data = await res.json();
+    const users = data.record.users;
+
+    // 2. עדכון המשתמש המתאים
+    const updatedUsers = users.map((user) => {
+      if (user.email === email) {
+        // הוספת רכישה חדשה ל-purchases
+        const newPurchases = user.purchases ? [...user.purchases] : [];
+
+        newPurchases.push(cartItems);
+
+        // ריקון העגלה
+        return { ...user, purchases: newPurchases, cart: [] };
+      }
+      return user;
+    });
+
+    // 3. שמירה חזרה לבין
+    const putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "X-Master-Key": API_KEY,
+      },
+      body: JSON.stringify({ users: updatedUsers }),
+    });
+
+    if (!putRes.ok) {
+      throw new Error("שגיאה בשמירת ההזמנה בבין");
+    }
+
+    console.log("ההזמנה נשמרה בהצלחה!");
+
+    // 4. עדכון המשתמש בקוד שלך (ריקון העגלה גם בזיכרון)
+    updateCartCount();
+
+    // אפשר גם לעדכן currentUser
+    const updatedUser = updatedUsers.find((u) => u.email === email);
+    // currentUser = updatedUser;
+    localStorage.setItem("currentUser", JSON.stringify(updatedUser));
+  } catch (error) {
+    console.error("שגיאה בשמירת ההזמנה:", error);
   }
 }
 //------------------------------------------------------------------------------------------------------------------------
