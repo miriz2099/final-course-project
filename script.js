@@ -32,16 +32,15 @@ function showUserProfile() {
   hideHomePage();
 
   if (!isLoggedIn) {
-    resultsDiv.innerHTML = "<p>אנא התחבר כדי לצפות בפרופיל שלך.</p>";
+    resultsDiv.innerHTML = "<p>Please log in to view your profile.</p>";
     return;
   }
 
-  // שליפת המשתמש מה-localStorage (כולל רכישות קודמות)
+  // Fetch user from localStorage (including previous purchases)
   const currentUserData = JSON.parse(localStorage.getItem("currentUser")) || {};
   const purchases = currentUserData.purchases || [];
 
-  console.log(purchases);
-  const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
+  // const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
   const userCart = cart || [];
   let cartHtml = "";
   if (Array.isArray(userCart) && userCart.length > 0) {
@@ -51,8 +50,8 @@ function showUserProfile() {
       <div class="cart-item">
         <img src="${item.thumbnail}" alt="${item.title}" style="width:50px; height:50px;">
         <span>${item.title}</span>
-        <span>כמות: ${item.quantity}</span>
-        <span>מחיר: $${item.price}</span>
+        <span>Quantity: ${item.quantity}</span>
+        <span>Price: $${item.price}</span>
       </div>
     `
       )
@@ -60,17 +59,17 @@ function showUserProfile() {
     cartHtml += `
        <div class="cart-actions" style="margin-top: 15px;">
         <button id="checkoutButton" style="padding:10px 20px; background-color:green; color:white; border:none; cursor:pointer;">
-        לתשלום
+        go to cart
       </button>
      </div>
 `;
   } else {
-    cartHtml = "<p>העגלה ריקה</p>";
+    cartHtml = "<p>Your cart is empty</p>";
   }
 
   let purchasesHtml = "";
   if (purchases.length === 0) {
-    purchasesHtml = "<p>אין הזמנות קודמות.</p>";
+    purchasesHtml = "<p>No previous orders.</p>";
   } else {
     purchasesHtml = `
       <div class="purchases-container">
@@ -78,7 +77,7 @@ function showUserProfile() {
           .map(
             (order, index) => `
             <div class="order">
-              <h4>הזמנה #${index + 1}</h4>
+              <h4>Order #${index + 1}</h4>
               <ul>
                 ${order
                   .map(
@@ -86,8 +85,8 @@ function showUserProfile() {
                       `<li> <div class="cart-item">
                           <img src="${item.thumbnail}" alt="${item.title}" style="width:50px; height:50px;">
                           <span>${item.title}</span>
-                          <span>כמות: ${item.quantity}</span>
-                           <span>מחיר: $${item.price}</span></div>
+                          <span>Quantity: ${item.quantity}</span>
+                           <span>Price: $${item.price}</span></div>
                     
                     </li>`
                   )
@@ -102,18 +101,26 @@ function showUserProfile() {
   }
 
   resultsDiv.innerHTML = `
-    <h2>ברוך הבא, ${loggedInEmail}</h2>
-    <h3>🛒 העגלה הנוכחית</h3>
-    ${cartHtml}
-    <h3>📦 ההזמנות הקודמות שלך</h3>
-    ${purchasesHtml}
-  `;
+  <h2 style="text-align:center; margin-bottom: 20px;">Welcome, ${loggedInEmail}</h2>
+  <div class="profile-container">
+    <div class="cart-section">
+      <h3>🛒 Current Cart</h3>
+      ${cartHtml}
+    </div>
+    <div class="orders-section">
+      <h3>📦 Your Previous Orders</h3>
+      ${purchasesHtml}
+    </div>
+  </div>
+`;
+
   document
     .getElementById("checkoutButton")
     .addEventListener("click", function () {
-      showPaymentForm(); // כאן את קוראת לפונקציה שלך
+      displayCartInResults();
+      // showPaymentForm();
 
-      saveOrderForUser(loggedInEmail, cart);
+      // saveOrderForUser(loggedInEmail, cart);
     });
 }
 
@@ -129,9 +136,9 @@ function displayUserName() {
   const currentUser = getCurrentUser();
 
   if (currentUser && currentUser.name) {
-    userNameDisplay.textContent = `${currentUser.name} (התנתק)`;
+    userNameDisplay.textContent = `${currentUser.name} (Logout)`;
   } else {
-    userNameDisplay.textContent = "התחבר";
+    userNameDisplay.textContent = "Login";
   }
 }
 
@@ -139,8 +146,8 @@ function handleUserClick() {
   const currentUser = getCurrentUser();
 
   if (currentUser && currentUser.name) {
-    // המשתמש מחובר – שואלים אם להתנתק
-    if (confirm("האם את/ה בטוח/ה שברצונך להתנתק?")) {
+    // User is logged in – ask if they want to log out
+    if (confirm("Are you sure you want to log out?")) {
       localStorage.removeItem("currentUser");
       isLoggedIn = false;
       loggedInEmail = "";
@@ -150,7 +157,7 @@ function handleUserClick() {
       displayUserName();
     }
   } else {
-    // המשתמש לא מחובר – כאן אפשר לפתוח חלון התחברות
+    // User is not logged in – open login popup
     openLoginPopup();
   }
 }
@@ -198,7 +205,7 @@ document.getElementById("closeRegisterLogin").addEventListener("click", () => {
   register.classList.remove("hidden");
 });
 
-//sing in form
+//sign up form
 async function addUser(e) {
   e.preventDefault();
 
@@ -230,7 +237,7 @@ async function addUser(e) {
   console.log("Updated users:", updatedUsers);
   console.log(user);
 
-  // שלב 3: שלח עדכון ל־bin
+  // Step 3: Send update to bin
   try {
     await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: "PUT",
@@ -241,16 +248,16 @@ async function addUser(e) {
       body: JSON.stringify({ users: updatedUsers }),
     });
 
-    alert("משתמש נוסף בהצלחה!");
+    alert("User added successfully!");
     localStorage.setItem("currentUser", JSON.stringify(user));
-    currentUser = user; // עדכון המשתמש הנוכחי
+    currentUser = user; // Update current user
     isLoggedIn = true;
     loggedInEmail = user.email;
     updateCartCount();
     window.location.href = "index.html";
     signupForm.reset();
   } catch (error) {
-    console.error("שגיאה בעדכון:", error);
+    console.error("Error updating:", error);
   }
 }
 
@@ -258,10 +265,10 @@ function showPassword() {
   const passwordInput = document.getElementById("loginPassword");
   if (passwordInput.type === "password") {
     passwordInput.type = "text";
-    togglePassword.textContent = "הסתר";
+    togglePassword.textContent = "Hide";
   } else {
     passwordInput.type = "password";
-    togglePassword.textContent = "הצג";
+    togglePassword.textContent = "Show";
   }
 }
 
@@ -280,28 +287,24 @@ async function loginUser(e) {
     });
 
     const data = await res.json();
-    console.log("Data from JSONBin:", data);
     const users = data.record.users || [];
-    console.log("All users:", users);
     // search for the user
     const foundUser = users.find(
       (u) => u.email === email && u.password === password
     );
-    console.log("Found user:", foundUser);
     if (foundUser) {
-      alert("התחברת בהצלחה!");
-      // שמירה ב־localStorage לצורך התחברות עתידית
+      alert("Logged in successfully!");
+      // Save in localStorage for future login
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
       isLoggedIn = true;
       loggedInEmail = foundUser.email;
       // currentUser = foundUser;
-      console.log(foundUser);
       const localCart = JSON.parse(localStorage.getItem("cart")) || [];
       const serverCart = foundUser.cart || [];
 
       cart = mergeCarts(localCart, serverCart);
 
-      // שומר את הסל המאוחד בלוקל ואת הסל של המשתמש בבין
+      // Save merged cart in local and user's bin
       localStorage.setItem("cart", JSON.stringify(cart));
       localStorage.setItem(
         "currentUser",
@@ -313,24 +316,24 @@ async function loginUser(e) {
       window.location.href = "index.html";
       updateCartCount();
     } else {
-      alert("פרטי ההתחברות שגויים");
+      alert("Incorrect login details");
     }
   } catch (error) {
-    console.error("שגיאה בהתחברות:", error);
-    alert("אירעה שגיאה. נסה שוב");
+    console.error("Login error:", error);
+    alert("An error occurred. Please try again");
   }
 }
 
 function mergeCarts(localCart, serverCart) {
-  const mergedCart = [...serverCart]; // מתחילים עם הסל מהשרת
+  const mergedCart = [...serverCart]; // Start with server cart
 
   localCart.forEach((localItem) => {
     const existing = mergedCart.find((item) => item.id === localItem.id);
     if (existing) {
-      // אם המוצר כבר קיים בסל, מוסיפים את הכמויות
+      // If product already exists in cart, add quantities
       existing.quantity += localItem.quantity;
     } else {
-      // אם לא קיים, מוסיפים את הפריט מהסל המקומי
+      // If not, add the item from local cart
       mergedCart.push(localItem);
     }
   });
@@ -401,7 +404,6 @@ logo.addEventListener("click", () => {
   searchInput.value = "";
   lastView = null;
   sections.forEach((sec) => (sec.style.display = "none"));
-  console.log(sections);
 
   if (homePage) {
     homePage.style.display = "block";
@@ -411,7 +413,7 @@ logo.addEventListener("click", () => {
 
 // search input listener
 
-// --- פונקציות עיקריות ---
+// --- Main Functions ---
 
 function handleSearch(event) {
   const query = event.target.value.trim();
@@ -433,7 +435,7 @@ function fetchProducts(query) {
       displayResults(data.products);
     })
     .catch((err) => {
-      console.error("eror load the data", err);
+      console.error("Error loading data", err);
     });
 }
 
@@ -461,19 +463,27 @@ function createProductCard(product) {
     <div class="card-body">
       <div class="card-title">${product.title}</div>
       <div class="card-price">$${product.price}</div>
-      <button class="add-to-cart">הוסף לסל</button>
+      <div class="product-rating">
+                    ${generateStars(product.rating)}
+                    <span>(${product.rating})</span>
+                </div>
+     <div class="product-actions">
+                    <button class="add-to-cart large" >
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
     </div>
   `;
 
-  // מאזין ללחיצה על כל הקלף
+  // Listen for click on the card
   card.addEventListener("click", () => {
     displaySingleProduct(product);
   });
 
-  // מאזין לכפתור הוספה לסל (מונע את פתיחת הדף)
+  // Listen for add to cart button (prevent opening the product page)
   const addToCartBtn = card.querySelector(".add-to-cart");
   addToCartBtn.addEventListener("click", (event) => {
-    event.stopPropagation(); // כדי שלא יפעיל את קליק הקלף
+    event.stopPropagation();
     addToCart(product);
   });
 
@@ -482,19 +492,19 @@ function createProductCard(product) {
 // -----------------------------------------------------------------------------------------------------------------------
 function updateCartCount() {
   const cartCountSpan = document.getElementById("cart-count");
-  // סכום כמויות כל הפריטים בעגלה
+  // Sum of all item quantities in the cart
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   cartCountSpan.textContent = totalItems;
 }
 
 function addToCart(product) {
-  // בודקת אם המוצר כבר קיים בעגלה
+  // Check if the product already exists in the cart
   const existingItem = cart.find((item) => item.id === product.id);
 
   if (existingItem) {
-    existingItem.quantity += 1; // מעלה כמות
+    existingItem.quantity += 1;
   } else {
-    // יוצרת עותק עם quantity = 1
+    // Create a copy with quantity = 1
     cart.push({
       id: product.id,
       title: product.title,
@@ -523,7 +533,7 @@ function removeFromCart(productId) {
 async function saveCart() {
   if (isLoggedIn) {
     try {
-      // שלב 1: קבלת כל המשתמשים
+      // Step 1: Get all users
       const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         headers: {
           "X-Master-Key": API_KEY,
@@ -532,7 +542,7 @@ async function saveCart() {
       const data = await res.json();
       const users = data.record.users;
 
-      // שלב 2: עדכון הסל של המשתמש
+      // Step 2: Update user's cart
       const updatedUsers = users.map((u) => {
         if (u.email === loggedInEmail) {
           return { ...u, cart: cart };
@@ -540,7 +550,7 @@ async function saveCart() {
         return u;
       });
 
-      // שלב 3: שליחה חזרה ל-bin
+      // Step 3: Send back to bin
       await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
         method: "PUT",
         headers: {
@@ -550,14 +560,14 @@ async function saveCart() {
         body: JSON.stringify({ users: updatedUsers }),
       });
 
-      console.log("הסל נשמר בבין למשתמש", loggedInEmail);
-      localStorage.setItem("cart", JSON.stringify(cart)); // עדכון בלוקל
+      console.log("Cart saved to bin for user", loggedInEmail);
+      localStorage.setItem("cart", JSON.stringify(cart));
       updateCartCount();
     } catch (err) {
-      console.error("שגיאה בשמירת הסל לבין:", err);
+      console.error("Error saving cart to bin:", err);
     }
   } else {
-    // אין משתמש מחובר → שמירה בלוקל
+    // No user logged in → save to local
     localStorage.setItem("cart", JSON.stringify(cart));
     updateCartCount();
   }
@@ -565,52 +575,79 @@ async function saveCart() {
 
 function displayCartInResults() {
   hideHomePage();
-  clearResults(); // מנקה קודם
+  clearResults();
 
   if (cart.length === 0) {
-    resultsDiv.innerHTML = "<p>העגלה ריקה</p>";
+    resultsDiv.innerHTML = `
+    <div class="cart-container">
+      <div class="cart-items empty">
+        <p>Your cart is empty</p>
+      </div>
+      <div class="cart-summary">
+        <div class="cart-total">Total to pay: $0.00</div>
+        <button id="checkoutBtn" disabled>Checkout</button>
+      </div>
+    </div>
+  `;
     return;
   }
-
   const cartContainer = document.createElement("div");
   cartContainer.className = "cart-container";
+
+  const itemsDiv = document.createElement("div");
+  itemsDiv.className = "cart-items";
+  itemsDiv.innerHTML = "<h2>Items in your cart:</h2>";
 
   cart.forEach((item) => {
     const itemDiv = document.createElement("div");
     itemDiv.className = "cart-item";
 
     itemDiv.innerHTML = `
-     <img src="${item.thumbnail}" alt="${item.title}">
-     <span class="item-title">${item.title}</span>
-     <span class="item-price">מחיר: $${item.price}</span>
-     <div class="quantity-controls">
-       <button class="minus-btn" data-id="${item.id}">-</button>
-       <span class="quantity-display">${item.quantity}</span>
-       <button class="plus-btn" data-id="${item.id}">+</button>
+   <img src="${item.thumbnail}" alt="${item.title}">
+   <span class="item-title">${item.title}</span>
+   <span class="item-price">Price: $${item.price}</span>
+   <div class="quantity-controls">
+     <button class="minus-btn" data-id="${item.id}">-</button>
+     <span class="quantity-display">${item.quantity}</span>
+     <button class="plus-btn" data-id="${item.id}">+</button>
   </div>
-`;
-    const totalPrice = cart.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0
-    );
+  `;
 
-    const totalDiv = document.createElement("div");
-    totalDiv.className = "cart-total";
-    totalDiv.textContent = `סה"כ לתשלום: $${totalPrice.toFixed(2)}`;
-    cartContainer.appendChild(totalDiv);
-
-    cartContainer.appendChild(itemDiv);
+    itemsDiv.appendChild(itemDiv);
   });
 
-  // כפתור לתשלום
+  const summaryDiv = document.createElement("div");
+  summaryDiv.className = "cart-summary";
+
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const totalDiv = document.createElement("div");
+  totalDiv.className = "cart-total";
+  totalDiv.textContent = `Total to pay: $${totalPrice.toFixed(2)}`;
+
   const checkoutBtn = document.createElement("button");
-  checkoutBtn.textContent = "לתשלום";
+  checkoutBtn.textContent = "Checkout";
   checkoutBtn.id = "checkoutBtn";
-  cartContainer.appendChild(checkoutBtn);
+
+  const paymentOptionsDiv = document.createElement("div");
+  paymentOptionsDiv.className = "payment-options";
+
+  paymentOptionsDiv.innerHTML = `
+  <img src="credit_card.jpg" alt="credit cart" title="credit card" />
+
+`;
+
+  summaryDiv.appendChild(totalDiv);
+  summaryDiv.appendChild(checkoutBtn);
+  summaryDiv.appendChild(paymentOptionsDiv);
+
+  cartContainer.appendChild(itemsDiv);
+  cartContainer.appendChild(summaryDiv);
 
   resultsDiv.appendChild(cartContainer);
 
-  // מאזינים לכפתורי פלוס ומינוס
   resultsDiv.querySelectorAll(".plus-btn").forEach((btn) =>
     btn.addEventListener("click", () => {
       const id = btn.getAttribute("data-id");
@@ -625,16 +662,15 @@ function displayCartInResults() {
     })
   );
 
-  // מאזין לכפתור לתשלום
+  // Listen for checkout button
   checkoutBtn.addEventListener("click", async () => {
     if (cart.length === 0) {
-      alert("העגלה ריקה");
+      alert("Your cart is empty");
       return;
     }
 
-    // console.log(isLoggedIn, loggedInEmail, currentUser);
     if (!isLoggedIn) {
-      // משתמש לא מחובר - נפתח טופס למילוי פרטים
+      // User not logged in - open payment form
       showPaymentForm();
     } else {
       showPaymentForm();
@@ -677,25 +713,24 @@ function showPaymentForm() {
 
   const formHtml = `
     <div id="paymentForm" >
-      <h3>פרטי תשלום</h3>
-      <label>שם מלא:<br><input type="text" id="fullName" required></label><br><br>
-      <label>טלפון:<br><input type="tel" id="phone" required></label><br><br>
-      <label>כתובת למשלוח:<br><textarea id="address" rows="3" required></textarea></label><br><br>
+      <h3>Payment Details</h3>
+      <label>Full Name:<br><input type="text" id="fullName" required></label><br><br>
+      <label>Phone:<br><input type="tel" id="phone" required></label><br><br>
+      <label>Shipping Address:<br><textarea id="address" rows="3" required></textarea></label><br><br>
       
-      <h4>פרטי כרטיס אשראי</h4>
-      <label>מספר כרטיס:<br><input type="text" id="cardNumber" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" required></label><br><br>
-      <label>תוקף (MM/YY):<br><input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required></label><br><br>
+      <h4>Credit Card Details</h4>
+      <label>Card Number:<br><input type="text" id="cardNumber" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" required></label><br><br>
+      <label>Expiry (MM/YY):<br><input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required></label><br><br>
       <label>CVV:<br><input type="password" id="cvv" maxlength="4" placeholder="123" required></label><br><br>
 
-      <p><strong>סה"כ לתשלום:</strong> $${totalPrice.toFixed(2)}</p>
+      <p><strong>Total to pay:</strong> $${totalPrice.toFixed(2)}</p>
 
-      <button id="payBtn">שלם</button>
-      <button id="cancelPaymentBtn" style="margin-left:10px;">ביטול</button>
+      <button id="payBtn">Pay</button>
+      <button id="cancelPaymentBtn" style="margin-left:10px;">Cancel</button>
     </div>
   `;
 
   resultsDiv.innerHTML = formHtml;
-  console.log("cart----------", cart);
 
   document.getElementById("payBtn").addEventListener("click", () => {
     const name = document.getElementById("fullName").value.trim();
@@ -707,38 +742,38 @@ function showPaymentForm() {
     const expiry = document.getElementById("expiry").value.trim();
     const cvv = document.getElementById("cvv").value.trim();
     console.log("cart", cart);
-    // בדיקות בסיסיות:
+    // Basic validation:
     if (!name || !phone || !address || !cardNumber || !expiry || !cvv) {
-      alert("אנא מלא את כל השדות");
+      alert("Please fill in all fields");
       return;
     }
 
     if (!/^\d{16}$/.test(cardNumber)) {
-      alert("מספר כרטיס לא חוקי. יש להזין 16 ספרות.");
+      alert("Invalid card number. Please enter 16 digits.");
       return;
     }
 
     if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(expiry)) {
-      alert("פורמט תוקף לא חוקי. יש להזין MM/YY.");
+      alert("Invalid expiry format. Please enter MM/YY.");
       return;
     }
 
     if (!/^\d{3,4}$/.test(cvv)) {
-      alert("CVV לא חוקי. יש להזין 3 או 4 ספרות.");
+      alert("Invalid CVV. Please enter 3 or 4 digits.");
       return;
     }
 
-    // כאן אפשר להוסיף טיפול תשלום אמיתי
-    console.log("תשלום מתבצע עם הפרטים הבאים:", cart);
-    // תשלום הושלם - הצג קבלה
+    // Here you can add real payment handling
+    console.log("Payment processing with the following details:", cart);
+    // Payment completed - show receipt
     showReceipt({ fullName: name, phone, address }, cart, totalPrice);
   });
 
   document.getElementById("cancelPaymentBtn").addEventListener("click", () => {
-    displayCartInResults(); // חוזר לעגלת הקניות
+    displayCartInResults();
   });
 
-  // עיצוב אוטומטי למספר כרטיס - להוסיף רווח כל 4 ספרות
+  // Auto-format card number - add space every 4 digits
   const cardInput = document.getElementById("cardNumber");
   cardInput.addEventListener("input", (e) => {
     let value = e.target.value.replace(/\D/g, "").substring(0, 16);
@@ -750,40 +785,38 @@ function showPaymentForm() {
 function showReceipt(userInfo, cartItems, totalPrice) {
   let receiptHtml = `
     <div id="receipt">
-      <h2>קבלה</h2>
-      <p><strong>שם:</strong> ${
-        userInfo.fullName || loggedInEmail || "משתמש לא מזוהה"
+      <h2>Receipt</h2>
+      <p><strong>Name:</strong> ${
+        userInfo.fullName || loggedInEmail || "Unknown user"
       }</p>
       ${
-        userInfo.phone ? `<p><strong>טלפון:</strong> ${userInfo.phone}</p>` : ""
+        userInfo.phone ? `<p><strong>Phone:</strong> ${userInfo.phone}</p>` : ""
       }
       ${
         userInfo.address
-          ? `<p><strong>כתובת:</strong> ${userInfo.address}</p>`
+          ? `<p><strong>Address:</strong> ${userInfo.address}</p>`
           : ""
       }
       <hr>
-      <h3>פרטי ההזמנה:</h3>
+      <h3>Order Details:</h3>
       <ul>
   `;
   console.log(cartItems);
   cartItems.forEach((item) => {
-    receiptHtml += `<li>${item.title} - כמות: ${item.quantity} - מחיר יחידה: $${item.price}</li>`;
+    receiptHtml += `<li>${item.title} - Quantity: ${item.quantity} - Unit Price: $${item.price}</li>`;
   });
 
   receiptHtml += `
       </ul>
       <hr>
-      <p><strong>סה"כ לתשלום:</strong> $${totalPrice.toFixed(2)}</p>
-      <button id="backToShopBtn">חזרה לחנות</button>
+      <p><strong>Total to pay:</strong> $${totalPrice.toFixed(2)}</p>
+      <button id="backToShopBtn">Back to Shop</button>
     </div>
   `;
 
   resultsDiv.innerHTML = receiptHtml;
 
   document.getElementById("backToShopBtn").addEventListener("click", () => {
-    // נקה עגלה אם רוצים, או תשאירי לפי הלוגיקה שלך
-
     cart = [];
     localStorage.removeItem("cart");
 
@@ -795,12 +828,12 @@ function showReceipt(userInfo, cartItems, totalPrice) {
 
 async function saveOrderForUser(email, cartItems) {
   if (!email || !cartItems || cartItems.length === 0) {
-    console.error("אין מייל או עגלה ריקה");
+    console.error("No email or empty cart");
     return;
   }
 
   try {
-    // 1. קבלת כל המשתמשים מהבין
+    // 1. Get all users from bin
     const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       headers: {
         "X-Master-Key": API_KEY,
@@ -809,21 +842,21 @@ async function saveOrderForUser(email, cartItems) {
     const data = await res.json();
     const users = data.record.users;
 
-    // 2. עדכון המשתמש המתאים
+    // 2. Update the relevant user
     const updatedUsers = users.map((user) => {
       if (user.email === email) {
-        // הוספת רכישה חדשה ל-purchases
+        // Add new purchase to purchases
         const newPurchases = user.purchases ? [...user.purchases] : [];
 
         newPurchases.push(cartItems);
 
-        // ריקון העגלה
+        // Empty the cart
         return { ...user, purchases: newPurchases, cart: [] };
       }
       return user;
     });
 
-    // 3. שמירה חזרה לבין
+    // 3. Save back to bin
     const putRes = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}`, {
       method: "PUT",
       headers: {
@@ -834,20 +867,20 @@ async function saveOrderForUser(email, cartItems) {
     });
 
     if (!putRes.ok) {
-      throw new Error("שגיאה בשמירת ההזמנה בבין");
+      throw new Error("Error saving order to bin");
     }
 
-    console.log("ההזמנה נשמרה בהצלחה!");
+    console.log("Order saved successfully!");
 
-    // 4. עדכון המשתמש בקוד שלך (ריקון העגלה גם בזיכרון)
+    // 4. Update user in your code (empty cart in memory too)
     updateCartCount();
 
-    // אפשר גם לעדכן currentUser
+    // Optionally update currentUser
     const updatedUser = updatedUsers.find((u) => u.email === email);
     // currentUser = updatedUser;
     localStorage.setItem("currentUser", JSON.stringify(updatedUser));
   } catch (error) {
-    console.error("שגיאה בשמירת ההזמנה:", error);
+    console.error("Error saving order:", error);
   }
 }
 //------------------------------------------------------------------------------------------------------------------------
@@ -858,14 +891,100 @@ function displaySingleProduct(product) {
   singleProduct.className = "single-product";
 
   singleProduct.innerHTML = `
-    <h2>${product.title}</h2>
-    <img src="${product.thumbnail}" alt="${product.title}" style="max-width:300px;">
-    <p><strong>price:</strong> $${product.price}</p>
-    <p><strong>description:</strong> ${product.description}</p>
-    <button id="backToResults">⬅ back </button>
-  `;
+        <div class="product-details-header">
+           <button id="backToResults">⬅ Back</button>
+        </div>
+        
+        <div class="product-details-content">
+            <div class="product-images">
+                <div class="main-image">
+                    <img src="${product.images[0]}" alt="${
+    product.title
+  }" id="main-product-image">
+                </div>
+                <div class="thumbnail-images">
+                    ${product.images
+                      .map(
+                        (img) => `
+                        <img src="${img}" alt="${product.title}" 
+                             onclick="document.getElementById('main-product-image').src='${img}'">
+                    `
+                      )
+                      .join("")}
+                </div>
+            </div>
+            
+            <div class="product-info">
+                <h1>${product.title}</h1>
+                <div class="product-rating">
+                    ${generateStars(product.rating)}
+                    <span>(${product.rating})</span>
+                </div>
+                <p class="product-price">$${product.price}</p>
+                <p class="product-description">${product.description}</p>
+                
+                <div class="product-specs">
+                    <h3>Technical Specifications</h3>
+                    <ul>
+                        <li><strong>Brand:</strong> ${product.brand}</li>
+                        <li><strong>Category:</strong> ${product.category}</li>
+                        <li><strong>Stock:</strong> ${product.stock} units</li>
+                        ${
+                          product.dimensions
+                            ? `
+                            <li><strong>Weight:</strong> ${product.dimensions.weight} kg</li>
+                            <li><strong>Width:</strong> ${product.dimensions.width} cm</li>
+                            <li><strong>Height:</strong> ${product.dimensions.height} cm</li>
+                            <li><strong>Depth:</strong> ${product.dimensions.depth} cm</li>
+                        `
+                            : ""
+                        }
+                    </ul>
+                </div>
+                
+                <div class="product-actions">
+                    <button class="add-to-cart large" >
+                        <i class="fas fa-cart-plus"></i> Add to Cart
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        
+        <div class="product-reviews">
+            <h3>Customer Reviews</h3>
+            <div class="reviews-list">
+                ${
+                  product.reviews
+                    ? product.reviews
+                        .map(
+                          (review) => `
+                    <div class="review">
+                        <div class="review-header">
+                            <strong>${review.reviewerName}</strong>
+                            <div class="review-rating">${generateStars(
+                              review.rating
+                            )}</div>
+                        </div>
+                        <p>${review.comment}</p>
+                        <small>${new Date(review.date).toLocaleDateString(
+                          "en-US"
+                        )}</small>
+                    </div>
+                `
+                        )
+                        .join("")
+                    : "<p>No reviews yet</p>"
+                }
+            </div>
+        </div>
+    `;
 
   resultsDiv.appendChild(singleProduct);
+  const addToCartBtn = singleProduct.querySelector(".add-to-cart");
+  addToCartBtn.addEventListener("click", (event) => {
+    addToCart(product);
+  });
 
   document.getElementById("backToResults").addEventListener("click", () => {
     if (lastView) {
@@ -880,8 +999,26 @@ function displaySingleProduct(product) {
     }
   });
 }
+function generateStars(rating) {
+  const fullStars = Math.floor(rating);
+  const halfStar = rating % 1 >= 0.5;
+  const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
 
-// --- פונקציות תצוגה כלליות ---
+  let stars = "";
+  for (let i = 0; i < fullStars; i++) {
+    stars += '<i class="fas fa-star"></i>';
+  }
+  if (halfStar) {
+    stars += '<i class="fas fa-star-half-alt"></i>';
+  }
+  for (let i = 0; i < emptyStars; i++) {
+    stars += '<i class="far fa-star"></i>';
+  }
+
+  return stars;
+}
+
+// --- General Display Functions ---
 
 function clearResults() {
   resultsDiv.innerHTML = "";
@@ -916,7 +1053,7 @@ submenuParents.forEach((item) => {
 // category links listener
 document.querySelectorAll("#categories-menu .submenu a").forEach((link) => {
   link.addEventListener("click", (e) => {
-    e.preventDefault(); // prevent default anchor behavior
+    e.preventDefault();
     const category = link.getAttribute("data-category");
     if (category) {
       loadCategory(category);
