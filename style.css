@@ -293,22 +293,76 @@
   /* home page */
 
   #home-page {
-      display: block;
+      padding: 20px;
+      max-width: 1200px;
+      margin: 0 auto;
   }
 
-
-  .fade {
-      animation: fadeIn 0.5s ease-in-out;
+  .ads-container {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 15px;
+      background-color: #fefefe;
+      margin-bottom: 30px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
-  @keyframes fadeIn {
-      from {
-          opacity: 0;
-      }
+  .ads-container h2 {
+      margin-top: 0;
+      margin-bottom: 10px;
+  }
 
-      to {
-          opacity: 1;
-      }
+  .categories-container {
+      display: flex;
+      gap: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+      height: 400px;
+      /* הגובה המקסימלי שתרצי */
+  }
+
+  .left-categories {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex: 1;
+      /* תופס חצי רוחב */
+      height: 100%;
+  }
+
+  .category-box {
+      flex: 1;
+      /* כל קטגוריה תתפוס חצי גובה */
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fafafa;
+      font-weight: bold;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+  }
+
+  .category-box:last-child {
+      margin-bottom: 0;
+  }
+
+  .category-right {
+      flex: 1;
+      /* תופס חצי רוחב */
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      background-color: #fafafa;
+      font-weight: bold;
+      cursor: pointer;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
   }
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
@@ -456,6 +510,7 @@
   }
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
+  /* profile */
   .profile-container {
       display: flex;
       gap: 20px;
@@ -829,3 +884,46 @@
       font-size: 14px;
       color: #aaa;
   }
+
+  @media (max-width: 700px) {
+      .categories-container {
+          grid-template-columns: 1fr;
+          grid-template-rows: auto;
+          height: auto;
+      }
+
+      .left-categories {
+          display: block;
+      }
+
+      .category-box {
+          height: auto;
+          margin-bottom: 20px;
+          /* רווח בין קטגוריות */
+      }
+
+      .category-right {
+          grid-column: auto;
+          grid-row: auto;
+          height: auto;
+          margin-bottom: 20px;
+      }
+
+
+
+      .footer-content {
+          flex-direction: column;
+          /* מהשורה לעמודה */
+          align-items: center;
+          /* למרכז את כל הסקשנים */
+      }
+
+      .footer-section {
+          min-width: 100%;
+          /* תופס כל סקשן את כל הרוחב */
+          margin-bottom: 20px;
+          /* רווח בין הסקשנים */
+      }
+  }
+
+  /* ----------------------------------------------------------------------------------------------------------------------- */

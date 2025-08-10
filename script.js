@@ -118,9 +118,6 @@ function showUserProfile() {
     .getElementById("checkoutButton")
     .addEventListener("click", function () {
       displayCartInResults();
-      // showPaymentForm();
-
-      // saveOrderForUser(loggedInEmail, cart);
     });
 }
 
@@ -1055,9 +1052,45 @@ document.querySelectorAll("#categories-menu .submenu a").forEach((link) => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
     const category = link.getAttribute("data-category");
+    console.log("Category clicked:", category);
     if (category) {
       loadCategory(category);
     }
+  });
+});
+
+// נבחר את כל הקטגוריות
+const categoryBoxes = document.querySelectorAll(
+  ".category-box, .category-right"
+);
+const contentDiv = document.getElementById("category-content");
+
+categoryBoxes.forEach((box) => {
+  box.addEventListener("click", (e) => {
+    e.preventDefault();
+    const category = box.getAttribute("data-category");
+    console.log("Category clicked:", category);
+    if (category) {
+      loadCategory(category);
+    }
+    // const category = box.getAttribute('data-category');
+    // // כאן תוכלי להחליף את התוכן בהתאם לקטגוריה
+    // let contentHtml = '';
+    // switch(category) {
+    //   case 'woman':
+    //     contentHtml = `<h2>קטגוריית נשים</h2><p>כאן מוצגים פריטים לנשים.</p>`;
+    //     break;
+    //   case 'man':
+    //     contentHtml = `<h2>קטגוריית גברים</h2><p>כאן מוצגים פריטים לגברים.</p>`;
+    //     break;
+    //   case 'electronics':
+    //     contentHtml = `<h2>קטגוריית אלקטרוניקה</h2><p>כאן מוצגים מוצרי אלקטרוניקה.</p>`;
+    //     break;
+    //   default:
+    //     contentHtml = `<p>בחר קטגוריה להצגה.</p>`;
+    // }
+    // // הצגת התוכן בתיבה המיועדת
+    // contentDiv.innerHTML = contentHtml;
   });
 });
 
