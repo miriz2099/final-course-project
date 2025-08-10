@@ -21,11 +21,15 @@
                 <input type="text" id="search-input" placeholder="search products..." class="search-bar">
 
                 <div class="icons">
-                    <div class="icon">
+                    <div class="icon user-icon">
                         <img id="userIcon" src="user.png" alt="User" />
+                        <span id="userNameDisplay"></span>
                     </div>
                     <div class="icon">
-                        <img src="shopping-cart.png" alt="Shopping Cart" />
+                        <img id="cartIcon" src="shopping-cart.png" alt="Shopping Cart" />
+                        <span id="cart-count" class="cart-count">0</span>
+
+
                     </div>
                     <nav>
                         <img src="menu.png" alt="Menu" />
@@ -35,7 +39,12 @@
                 <!-- </div> -->
             </div>
 
-
+            <!-- פאנל הסל -->
+            <!-- <div id="cartPanel"
+                style="display:none; position:fixed; right:20px; top:70px; background:white; border:1px solid #ccc; padding:15px; width:300px; max-height:400px; overflow-y:auto; box-shadow:0 0 10px rgba(0,0,0,0.3); z-index:999;">
+                <h3>הסל שלי</h3>
+                <div id="cartItems"></div>
+            </div> -->
             <div id="categories-menu">
 
 
@@ -122,44 +131,50 @@
 
             <section id="results"></section>
 
-            <section id="shopping-cart"></section>
+            <!-- <section id="shopping-cart"> -->
+
+
+            </section>
             <section id="checkout-page"></section>
             <section id="order-confirmation"></section>
 
-            <section id="login-page" class="popup hidden">
 
-                <form id="login-form">
-                    <input type="email" id="loginEmail" placeholder="email" required />
-                    <div class="password-wrapper">
-                        <input type="password" id="loginPassword" placeholder="password" required />
-                        <button type="button" id="togglePassword">Show</button>
-                    </div>
-                    <button type="submit">Login</button>
-                </form>
+            <section id="register-login-page" class="popup hidden">
+                <div id="singin">
+                    <h2>Sign Up</h2>
+                    <form id="signup-form">
+                        <label for="name">full name:</label>
+                        <input type="text" id="name" required>
 
-                <p>Don't have an account? <a href="#" id="show-register">Sign Up</a></p>
+                        <label for="email">email:</label>
+                        <input type="email" id="email" required>
 
-            </section>
-            <section id="register-page" class="popup hidden">
+                        <label for="address">shipping address:</label>
+                        <input type="text" id="address" required>
 
-                <h2>Sign Up</h2>
-                <form id="signup-form">
-                    <label for="name">full name:</label>
-                    <input type="text" id="name" required>
+                        <label for="password">password:</label>
+                        <input type="password" id="password" required>
 
-                    <label for="email">email:</label>
-                    <input type="email" id="email" required>
+                        <button type="submit">Sign Up</button>
+                    </form>
 
-                    <label for="address">shipping address:</label>
-                    <input type="text" id="address" required>
+                    <p>Already registered? <a href="#" id="show-login">Login</a></p>
+                </div>
+                <div id="login" class="hidden">
 
-                    <label for="password">password:</label>
-                    <input type="password" id="password" required>
+                    <form id="login-form">
+                        <input type="email" id="loginEmail" placeholder="email" required />
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" placeholder="password" required />
+                            <button type="button" id="togglePassword">Show</button>
+                        </div>
+                        <button type="submit">Login</button>
+                    </form>
 
-                    <button type="submit">Sign Up</button>
-                </form>
+                    <p>Don't have an account? <a href="#" id="show-register">Sign Up</a></p>
+                </div>
 
-                <p>Already registered? <a href="#" id="show-login">Login</a></p>
+                <button id="closeRegisterLogin">close</button>
             </section>
 
 
