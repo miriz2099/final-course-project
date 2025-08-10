@@ -7,7 +7,10 @@
     <title>EasyBasket</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="alternate icon" type="image/png" href="shop.png" </head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+
+    <link rel="alternate icon" type="image/png" href="shop.png">
+</head>
 
 <body>
     <div class="wrapper">
@@ -109,29 +112,41 @@
 
             <section id="home-page">
                 <div class="ads-container">
-                    <h2>מודעות</h2>
-                    <div class="ads-content">
-                        <!-- כאן תוכן המודעות שלך -->
-                        מודעות
-                    </div>
+
                 </div>
+
+
 
                 <div class="categories-container">
                     <div class="left-categories">
-                        <a href="#" data-category="woman">women</a>
-                        <a href="#" data-category="man">men</a>
-                        <a href="#" data-category="electronics">Electronics</a>
-                        <div class="category-box" data-category="woman">women</div>
-                        <div class="category-box" data-category="man">men</div>
+                        <div class="category-box" id="cat-women" data-category="womens-bags">
+                            <!-- <i class="fas fa-female"></i> -->
+                            <h3>Women</h3>
+                            <p>The style you love</p>
+                        </div>
+
+                        <div class="category-box" id="cat-men" data-category="mens-shirts">
+                            <!-- <i class="fas fa-tshirt"></i> -->
+                            <h3>Men</h3>
+                            <p>Latest fashion for men</p>
+                        </div>
                     </div>
-                    <div class="category-right" data-category="electronics">beauty</div>
+
+                    <div class="category-right" id="cat-beauty" data-category="beauty">
+                        <!-- <i class="fas fa-spa"></i> -->
+                        <h3>Beauty</h3>
+                        <p>Beauty and care products</p>
+                    </div>
                 </div>
+
+
+
             </section>
+
+
+
             <section id="results"></section>
 
-
-
-            </section>
             <section id="checkout-page"></section>
             <section id="order-confirmation"></section>
 
@@ -211,6 +226,8 @@
         </footer>
 
     </div>
+
+
 </body>
 
 <script src="script.js" defer></script>

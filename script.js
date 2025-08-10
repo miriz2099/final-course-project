@@ -882,6 +882,7 @@ async function saveOrderForUser(email, cartItems) {
 }
 //------------------------------------------------------------------------------------------------------------------------
 function displaySingleProduct(product) {
+  hideHomePage();
   resultsDiv.innerHTML = "";
 
   const singleProduct = document.createElement("div");
@@ -1073,24 +1074,6 @@ categoryBoxes.forEach((box) => {
     if (category) {
       loadCategory(category);
     }
-    // const category = box.getAttribute('data-category');
-    // // כאן תוכלי להחליף את התוכן בהתאם לקטגוריה
-    // let contentHtml = '';
-    // switch(category) {
-    //   case 'woman':
-    //     contentHtml = `<h2>קטגוריית נשים</h2><p>כאן מוצגים פריטים לנשים.</p>`;
-    //     break;
-    //   case 'man':
-    //     contentHtml = `<h2>קטגוריית גברים</h2><p>כאן מוצגים פריטים לגברים.</p>`;
-    //     break;
-    //   case 'electronics':
-    //     contentHtml = `<h2>קטגוריית אלקטרוניקה</h2><p>כאן מוצגים מוצרי אלקטרוניקה.</p>`;
-    //     break;
-    //   default:
-    //     contentHtml = `<p>בחר קטגוריה להצגה.</p>`;
-    // }
-    // // הצגת התוכן בתיבה המיועדת
-    // contentDiv.innerHTML = contentHtml;
   });
 });
 
@@ -1111,3 +1094,118 @@ function loadCategory(category) {
       resultsDiv.innerHTML = `<p>Unable to load products.</p>`;
     });
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  const categories = [
+    { key: "womens-bags", id: "cat-women" },
+    { key: "mens-shirts", id: "cat-men" },
+    { key: "beauty", id: "cat-beauty" },
+  ];
+
+  categories.forEach(async (c) => {
+    const el =
+      document.getElementById(c.id) ||
+      document.querySelector(`[data-category="${c.key}"]`);
+    if (!el) {
+      console.warn("Element not found for", c);
+      return;
+    }
+
+    try {
+      const res = await fetch(
+        `https://dummyjson.com/products/category/${c.key}`
+      );
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+
+      // בחר תמונה: מוצר ראשון במידה ויש, אחרת placeholder
+      const imgSrc =
+        data?.products?.[0]?.thumbnail ||
+        "https://via.placeholder.com/400x160?text=No+Image";
+
+      const img = document.createElement("img");
+      img.src = imgSrc;
+      img.alt = c.key;
+      img.className = "category-image"; // אם תרצי לשלוט בסגנון עוד
+      el.appendChild(img);
+    } catch (err) {
+      console.error("Error loading category", c.key, err);
+      // אפשר להכניס placeholder גם במקרה של שגיאה:
+      const img = document.createElement("img");
+      img.src = "https://via.placeholder.com/400x160?text=No+Image";
+      img.alt = "no-image";
+      el.appendChild(img);
+    }
+  });
+});
+// -----------------------------------------------------------------------------------------------------------------------
+document.addEventListener("DOMContentLoaded", () => {
+  const adsContainer = document.querySelector(".ads-container");
+
+  let current = 0;
+  let slides = [];
+
+  const couponCode = "SALE2025";
+
+  fetch("https://dummyjson.com/products")
+    .then((res) => res.json())
+    .then((data) => {
+      const products = data.products;
+      const randomProducts = [];
+      const usedIndexes = new Set();
+
+      while (randomProducts.length < 4 && usedIndexes.size < products.length) {
+        const randomIndex = Math.floor(Math.random() * products.length);
+        if (!usedIndexes.has(randomIndex)) {
+          usedIndexes.add(randomIndex);
+          randomProducts.push(products[randomIndex]);
+        }
+      }
+
+      randomProducts.forEach((product, i) => {
+        const slide = document.createElement("div");
+        slide.className = "ad-slide";
+        if (i === 0) slide.classList.add("active");
+
+        slide.innerHTML = `
+  <div class="ad-slide-content">
+    <img src="${product.thumbnail}" alt="${product.title}">
+    <div class="ad-slide-text">
+      <h4>${product.title}</h4>
+      <div class="review-rating">${generateStars(product.rating)}</div>
+      <span class="price">$${product.price}</span>
+    </div>
+  </div>
+`;
+
+        slide.addEventListener("click", () => {
+          console.log("Product clicked:", product);
+          displaySingleProduct(product);
+          console.log("Product clicked:");
+        });
+
+        // הוספת המודעה לדיב
+        adsContainer.insertBefore(
+          slide,
+          adsContainer.querySelector(".ad-next")
+        );
+      });
+
+      slides = document.querySelectorAll(".ad-slide");
+    })
+    .catch(console.error);
+
+  function showSlide(index) {
+    slides.forEach((slide, i) => {
+      slide.classList.toggle("active", i === index);
+    });
+    current = index;
+  }
+
+  function nextSlide() {
+    if (slides.length === 0) return;
+    showSlide((current + 1) % slides.length);
+  }
+
+  setInterval(nextSlide, 5000);
+});

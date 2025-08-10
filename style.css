@@ -296,8 +296,16 @@
       padding: 20px;
       max-width: 1200px;
       margin: 0 auto;
+
   }
 
+  #home-page>div {
+      margin-bottom: 25px;
+      /* רווח אנכי בין הדיבים */
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------- */
+  /* ads */
   .ads-container {
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -305,6 +313,15 @@
       background-color: #fefefe;
       margin-bottom: 30px;
       box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      max-width: 900px;
+      margin: auto;
+      overflow: hidden;
+      height: 350px;
+
   }
 
   .ads-container h2 {
@@ -312,6 +329,63 @@
       margin-bottom: 10px;
   }
 
+
+
+  .ad-slide {
+      display: none;
+      text-align: center;
+      cursor: pointer;
+
+  }
+
+  .ad-slide.active {
+      display: block;
+  }
+
+
+  .ad-slide-content {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      /* רווח בין התמונה לטקסט */
+  }
+
+  .ad-slide-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+  }
+
+  .ad-slide-content img {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px;
+      flex-shrink: 0;
+  }
+
+  .ad-slide-text {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+  }
+
+  .ad-slide-text h4 {
+      margin: 0 0 5px 0;
+      font-size: 1.1rem;
+      color: #222;
+  }
+
+  .ad-slide-text .price {
+      font-weight: bold;
+      color: #27ae60;
+      font-size: 1rem;
+  }
+
+
+
+  /* ------------------------------------------------------------------------------------------------------------------------ */
+  /* categories */
   .categories-container {
       display: flex;
       gap: 20px;
@@ -339,7 +413,7 @@
       background-color: #fafafa;
       font-weight: bold;
       cursor: pointer;
-
+      gap: 15px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -360,11 +434,23 @@
       background-color: #fafafa;
       font-weight: bold;
       cursor: pointer;
+      gap: 15px;
 
       display: flex;
       align-items: center;
       justify-content: center;
   }
+
+  .category-box img,
+  .category-right img {
+      width: 100%;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: block;
+  }
+
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
   /* shopping cart */
@@ -887,30 +973,53 @@
   }
 
   @media (max-width: 700px) {
+
+
+      .ad-slide-content {
+          flex-direction: column;
+          align-items: flex-start;
+      }
+
+      .ad-slide-content img {
+          width: 90px;
+          height: 90px;
+
+      }
+
       .categories-container {
-          grid-template-columns: 1fr;
-          grid-template-rows: auto;
+          flex-direction: column;
           height: auto;
+
       }
 
       .left-categories {
-          display: block;
+          flex-direction: column;
+          height: auto;
       }
 
       .category-box {
-          height: auto;
           margin-bottom: 20px;
-          /* רווח בין קטגוריות */
+          height: auto;
       }
 
       .category-right {
-          grid-column: auto;
-          grid-row: auto;
-          height: auto;
-          margin-bottom: 20px;
+          margin-top: 5px;
       }
 
+      .category-box img,
+      .category-right img {
+          width: 100%;
+          height: 90px;
+          object-fit: cover;
+          border-radius: 8px;
+          margin-top: 10px;
+          display: block;
+      }
 
+      .category-box p,
+      .category-right p {
+          display: none;
+      }
 
       .footer-content {
           flex-direction: column;
