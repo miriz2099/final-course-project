@@ -19,10 +19,12 @@
 
   }
 
+
   html,
   body {
       height: 100%;
       margin: 0;
+      padding: 0;
   }
 
 
@@ -33,6 +35,10 @@
       min-height: 100vh;
 
   }
+
+  /* img {
+      background-color: rgba(170, 248, 229, 0.361);
+  } */
 
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
@@ -145,8 +151,18 @@
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
   /* menu */
+
+
+
+  /* אייקון הבורגר - מוסתר במסכים גדולים */
+  nav {
+      display: none;
+      cursor: pointer;
+  }
+
   #categories-menu {
       display: flex;
+      flex-direction: row;
       gap: 1rem;
       list-style: none;
       padding: 1rem;
@@ -191,31 +207,16 @@
       padding: 0.5rem 1rem;
   }
 
+  .has-submenu:hover>.submenu {
+      display: block;
+  }
 
   /* make parent a containing block */
   .has-submenu {
       position: relative;
   }
 
-  /* hide until hover / JS */
-  .submenu {
-      display: none;
-      position: absolute;
-      background: #fff;
-      color: #000;
-      list-style: none;
-      min-width: 12rem;
-      padding: 0.5rem 0;
-      border-radius: var(--radius);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  }
 
-
-
-  /* make parent a containing block */
-  .has-submenu {
-      position: relative;
-  }
 
   /* default: align left edge */
   .has-submenu>.submenu {
@@ -223,9 +224,7 @@
       left: 0;
   }
 
-  .has-submenu.open>.submenu {
-      display: block;
-  }
+
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
   /* main */
@@ -269,15 +268,21 @@
       position: fixed;
       /* display: flex; */
       align-items: column;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       justify-content: center;
       width: 500px;
+      height: 500px;
       top: 20%;
       left: 50%;
       transform: translateX(-50%);
       background: white;
       padding: 1em;
       border: 1px solid #ccc;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
       z-index: 1000;
   }
 
@@ -287,6 +292,117 @@
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
   /*sign-up page */
+
+
+  /* מסתיר את הפופאפ כשיש hidden */
+  .popup.hidden {
+      display: none;
+  }
+
+
+  /* תוכן הפופאפ */
+  #singin,
+  #login {
+
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease-in-out;
+  }
+
+  #singin h2,
+  #login h2 {
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+      text-align: center;
+      color: #333;
+  }
+
+  /* טפסים */
+  #signup-form label {
+      font-weight: bold;
+      margin-top: 10px;
+      display: block;
+  }
+
+  #signup-form input,
+  #login-form input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-size: 0.95rem;
+      box-sizing: border-box;
+  }
+
+  .submit-button {
+      background: #27ae60;
+      color: white;
+      border: none;
+      padding: 10px;
+      width: 100%;
+      margin-top: 15px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+  }
+
+  .submit-button:hover {
+      background: #219150;
+  }
+
+  /* לינקים */
+  #singin p,
+  #login p {
+      margin-top: 15px;
+      text-align: center;
+  }
+
+  #singin a,
+  #login a {
+      color: #27ae60;
+      text-decoration: none;
+  }
+
+  #singin a:hover,
+  #login a:hover {
+      text-decoration: underline;
+  }
+
+  /* כפתור סגירה */
+  #closeRegisterLogin {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: #ff5f5f;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.3s;
+  }
+
+  #closeRegisterLogin:hover {
+      background: #e04b4b;
+  }
+
+  /* אנימציה */
+  @keyframes fadeIn {
+      from {
+          opacity: 0;
+          transform: scale(0.9);
+      }
+
+      to {
+          opacity: 1;
+          transform: scale(1);
+      }
+  }
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
 
@@ -309,10 +425,11 @@
   .ads-container {
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       padding: 15px;
       background-color: #fefefe;
       margin-bottom: 30px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+
       display: flex;
       align-items: center;
       justify-content: center;
@@ -346,25 +463,25 @@
   .ad-slide-content {
       display: flex;
       align-items: center;
-      gap: 20px;
-      /* רווח בין התמונה לטקסט */
+      gap: 15px;
+      width: 100%;
+      padding: 10px;
+      justify-content: space-evenly;
   }
 
-  .ad-slide-content {
-      display: flex;
-      align-items: center;
-      gap: 10px;
+  .ad-slide-img {
+
+      height: 170px;
   }
 
-  .ad-slide-content img {
-      width: 150px;
-      height: 150px;
+  .ad-slide-img img {
+      width: 100%;
+      height: 100%;
       object-fit: cover;
-      border-radius: 6px;
-      flex-shrink: 0;
   }
 
   .ad-slide-text {
+      flex: 1;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -372,15 +489,13 @@
 
   .ad-slide-text h4 {
       margin: 0 0 5px 0;
-      font-size: 1.1rem;
-      color: #222;
   }
 
-  .ad-slide-text .price {
+  .price {
       font-weight: bold;
       color: #27ae60;
-      font-size: 1rem;
   }
+
 
 
 
@@ -409,6 +524,7 @@
       /* כל קטגוריה תתפוס חצי גובה */
       border: 1px solid #ccc;
       border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       padding: 20px;
       background-color: #fafafa;
       font-weight: bold;
@@ -524,12 +640,13 @@
 
   .cart-summary {
       flex: 1;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       padding: 20px;
       height: 70vh;
-      width: 500px;
-      background: #f5f5f5;
+      width: 650px;
+      background: #fafafa;
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -591,9 +708,205 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 150px;
+      height: 70vh;
       font-size: 18px;
       color: #777;
+  }
+
+  /* ---------------------------------------------------------------------------------------------------------------------- */
+  /* payment form */
+  #paymentForm {
+      width: 600px;
+      margin: 40px auto;
+      padding: 30px 36px;
+
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 4px 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fafafabb;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #2a4d2a;
+      /* ירוק כהה */
+      box-sizing: border-box;
+  }
+
+  #paymentForm h3,
+  #paymentForm h4 {
+      margin-top: 0;
+      color: #2e7d32;
+      /* ירוק בינוני כהה */
+      font-weight: 700;
+  }
+
+  #paymentForm label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #2e7d32;
+  }
+
+  #paymentForm input[type="text"],
+  #paymentForm input[type="tel"],
+  #paymentForm input[type="password"],
+  #paymentForm textarea {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid #cccccc;
+      border-radius: 8px;
+      box-shadow: 4px 2px 5px rgba(0, 0, 0, 0.1);
+      font-size: 1rem;
+      transition: border-color 0.3s ease;
+      font-family: inherit;
+      color: #2a4d2a;
+      box-sizing: border-box;
+  }
+
+  #paymentForm input[type="text"]:focus,
+  #paymentForm input[type="tel"]:focus,
+  #paymentForm input[type="password"]:focus,
+  #paymentForm textarea:focus {
+      border-color: #388e3c;
+      /* ירוק בוהק */
+      outline: none;
+      box-shadow: 0 0 6px rgba(56, 142, 60, 0.7);
+  }
+
+  #paymentForm p {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-top: 24px;
+      color: #2e7d32;
+  }
+
+  #paymentForm button {
+      background-color: #388e3c;
+      /* ירוק */
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 22px;
+  }
+
+
+
+  #payBtn:hover {
+      background-color: #88cb8c;
+      color: #1b3a1b;
+  }
+
+  #cancelPaymentBtn {
+      background-color: #a5d6a7;
+      color: #2a4d2a;
+      margin-left: 16px;
+      padding: 14px 28px;
+      font-weight: 600;
+  }
+
+
+  #cancelPaymentBtn:hover {
+      background-color: #f03939;
+      color: #1b3a1b;
+  }
+
+  /* ------------------------------------------------------------------------------------------------------------------------ */
+  /* receipt */
+  #receipt {
+      max-width: 600px;
+      margin: 30px auto;
+      padding: 30px 36px;
+      background-color: #fefefe;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #222;
+      box-sizing: border-box;
+  }
+
+  #receipt h2 {
+      margin-top: 0;
+      color: #2e7d32;
+      font-weight: 700;
+  }
+
+  #receipt h3 {
+      margin-bottom: 12px;
+      color: #388e3c;
+  }
+
+  #receipt p {
+      font-size: 1rem;
+      margin: 6px 0;
+  }
+
+  #receipt hr {
+      margin: 20px 0;
+      border: none;
+      border-top: 1px solid #ccc;
+  }
+
+  #receipt ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+  }
+
+  #receipt li {
+      display: flex;
+      align-items: center;
+      margin-bottom: 18px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+  }
+
+  #receipt li:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+      padding-bottom: 0;
+  }
+
+  #receipt img {
+      width: 70px;
+      height: 70px;
+      object-fit: cover;
+      border-radius: 8px;
+      margin-right: 16px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  .item-info {
+      flex: 1;
+      font-size: 1rem;
+      color: #333;
+  }
+
+  .item-title {
+      font-weight: 700;
+      color: #2e7d32;
+      font-size: 1.1rem;
+  }
+
+  #receipt button {
+      background-color: #388e3c;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-top: 20px;
+      margin-right: 12px;
+  }
+
+  #receipt button:hover {
+      background-color: #2e7d32;
   }
 
   /* ----------------------------------------------------------------------------------------------------------------------- */
@@ -724,8 +1037,10 @@
   /* single product */
   .product-details-header {
       padding: 10px;
-      background: #f5f5f5;
-      border-bottom: 1px solid #ddd;
+      background-color: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   #backToResults {
@@ -744,7 +1059,12 @@
   }
 
   .product-images {
-      flex: 1 1 300px;
+      /* flex: 1 1 300px; */
+      padding: 20px;
+      background-color: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   .product-images .main-image img {
@@ -752,6 +1072,7 @@
       max-width: 400px;
       border-radius: 8px;
       object-fit: contain;
+      background-color: rgba(170, 248, 229, 0.361);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
@@ -760,6 +1081,8 @@
       display: flex;
       gap: 10px;
       flex-wrap: wrap;
+
+
   }
 
   .thumbnail-images img {
@@ -769,6 +1092,10 @@
       border-radius: 5px;
       border: 2px solid transparent;
       transition: border-color 0.3s;
+      border: 1px solid rgb(170, 248, 229);
+      ;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   }
 
   .thumbnail-images img:hover,
@@ -777,10 +1104,15 @@
   }
 
   .product-info {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       flex: 1 1 300px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      background-color: #fafafa;
+      padding: 12px;
   }
 
   .product-info h1 {
@@ -857,6 +1189,10 @@
 
   .product-reviews {
       padding: 20px;
+      background-color: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
       border-top: 1px solid #ddd;
       margin-top: 20px;
   }
@@ -953,7 +1289,7 @@
       text-decoration: underline;
   }
 
-  .social a {
+  .social i {
       margin-right: 10px;
       font-size: 18px;
       color: #ccc;
@@ -972,6 +1308,49 @@
       color: #aaa;
   }
 
+  /* ----------------------------------------------------------------------------------------------------------------------------------------------------- */
+  /*footer links   */
+
+  .result-footer {
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-shadow: 4px 2px 5px rgba(0, 0, 0, 0.1);
+      background-color: #fafafa;
+
+      padding: 16px 20px;
+      width: 400px;
+      height: 200px;
+      margin: 20px auto;
+
+      font-family: Arial, sans-serif;
+      color: #00665c;
+  }
+
+  .result-title {
+      margin: 0 0 10px 0;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #00665c;
+  }
+
+  .result-text {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      line-height: 1.4;
+      color: #1a1a1a;
+  }
+
+  .result-note {
+      display: block;
+      font-size: 0.9rem;
+      color: #555555;
+      font-style: italic;
+  }
+
+
+
+  /* ----------------------------------------------------------------------------------------------------------------------------------------------------- */
+  /* media queries */
   @media (max-width: 700px) {
 
 
@@ -1033,6 +1412,135 @@
           /* תופס כל סקשן את כל הרוחב */
           margin-bottom: 20px;
           /* רווח בין הסקשנים */
+      }
+  }
+
+  @media screen and (max-width: 768px) {
+
+      /* מסתיר את התפריט המקורי */
+      #categories-menu {
+          display: flex;
+          flex-direction: column;
+          /* משנה מ־flex ל־block כדי שיהיה אנכי */
+          position: fixed;
+          top: 0;
+          right: -320px;
+          /* מוסתר מחוץ למסך */
+          width: 320px;
+          height: 100vh;
+          background: #fff;
+          box-shadow: -4px 0 20px rgba(0, 0, 0, 0.15);
+          padding: 1rem;
+          overflow-y: auto;
+          transition: right 0.3s ease;
+          z-index: 1000;
+      }
+
+      #categories-menu {
+          display: flex;
+          flex-direction: column;
+          /* שאר ההגדרות */
+          right: -320px;
+          transition: right 0.3s ease;
+      }
+
+      #categories-menu.open {
+          right: 0;
+          height: 500px;
+          flex-direction: column;
+      }
+
+
+      /* לא נראה במצב רגיל */
+      #categories-menu>.menu-item {
+          position: relative;
+          border-bottom: 1px solid #ccc;
+          padding: 0.8rem 0;
+      }
+
+      /* הסתר את כל ה-submenu כברירת מחדל */
+      #categories-menu>.menu-item>.submenu {
+
+          display: none;
+          box-shadow: none;
+          padding-left: 1rem;
+          border: none;
+      }
+
+
+      #categories-menu>.menu-item.active>.submenu {
+
+          display: block;
+          box-shadow: none;
+          padding-left: 1rem;
+          border: none;
+      }
+
+
+
+      .has-submenu>.submenu {
+          top: 0%;
+          right: 50%;
+      }
+
+
+
+      /* הצג את כפתור הבורגר */
+      header nav {
+          display: block;
+          position: fixed;
+          top: 16px;
+          right: 16px;
+          z-index: 1100;
+          cursor: pointer;
+      }
+
+
+      .menu-item {
+          position: relative;
+          /* כדי שה-submenu יימקם יחסית אליו */
+      }
+
+      .submenu {
+          display: none;
+          position: absolute;
+          top: 0;
+          left: 100%;
+          /* מציב את התפריט מימין ל־menu-item */
+          width: 320px;
+          height: auto;
+          /* או גובה מתאים */
+          background: #fff;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+          padding: 1rem;
+          z-index: 1100;
+      }
+
+      .has-submenu>.submenu {
+          top: 0%;
+          right: 50%;
+      }
+
+
+
+
+  }
+
+  @media print {
+      body * {
+          visibility: hidden;
+      }
+
+      #receipt,
+      #receipt * {
+          visibility: visible;
+      }
+
+      #receipt {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
       }
   }
 

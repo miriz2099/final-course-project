@@ -27,8 +27,80 @@ const userIcon = document.getElementById("userIcon");
 const cartIcon = document.getElementById("cartIcon");
 const cartContainer = document.getElementById("shopping-cart");
 
+//---------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// Initialize App
+document.addEventListener("DOMContentLoaded", function () {
+  // localStorage.removeItem("cart");
+  initializeApp();
+  setupEventListeners();
+  checkUserLogin();
+  displayUserName();
+  updateCartCount();
+  if (isLoggedIn) {
+    loadCartFromBin();
+  }
+});
+
+function initializeApp() {
+  showHomePage();
+}
+function setupEventListeners() {
+  document
+    .getElementById("userNameDisplay")
+    .addEventListener("click", handleUserClick);
+  searchInput.addEventListener("input", handleSearch);
+  signupForm.addEventListener("submit", (e) => addUser(e));
+  loginForm.addEventListener("submit", (e) => loginUser(e));
+  document
+    .getElementById("togglePassword")
+    .addEventListener("click", showPassword);
+  cartIcon.addEventListener("click", () => {
+    displayCartInResults();
+  });
+  document.querySelectorAll("#info-links a").forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      hideHomePage();
+      const title = link.getAttribute("data-title");
+      const text = link.getAttribute("data-text");
+      const note = link.getAttribute("data-note");
+
+      resultsDiv.innerHTML = `
+      <div class="result-footer">
+      <h3 class="result-title">${title}</h3>
+     <p class="result-text">${text}</p>
+     <small class="result-note">${note}</small>
+    </div>
+     `;
+    });
+  });
+}
+
 // -----------------------------------------------------------------------------------------------------------------------
-function showUserProfile() {
+async function getCurrentUserPurchases(loggedInEmail) {
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${BIN_ID}/latest`, {
+      headers: {
+        "X-Master-Key": API_KEY,
+      },
+    });
+    const data = await res.json();
+    const users = data.record.users || [];
+    const currentUserData = users.find((u) => u.email === loggedInEmail);
+
+    if (currentUserData) {
+      return currentUserData.purchases || [];
+    } else {
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching purchases:", error);
+    return [];
+  }
+}
+
+async function showUserProfile() {
   hideHomePage();
 
   if (!isLoggedIn) {
@@ -38,7 +110,8 @@ function showUserProfile() {
 
   // Fetch user from localStorage (including previous purchases)
   const currentUserData = JSON.parse(localStorage.getItem("currentUser")) || {};
-  const purchases = currentUserData.purchases || [];
+  const purchases = await getCurrentUserPurchases(loggedInEmail);
+  // עכשיו אפשר להציג את ה-purchases
 
   // const currentUser = JSON.parse(localStorage.getItem("currentUser")) || {};
   const userCart = cart || [];
@@ -158,9 +231,15 @@ function handleUserClick() {
     openLoginPopup();
   }
 }
-
+let hidden = true;
 function openLoginPopup() {
+  hidden = !hidden;
   registerSection.classList.toggle("hidden");
+  hideHomePage();
+  resultsDiv.innerHTML = ""; // Clear results
+  if (hidden) {
+    showHomePage();
+  }
 }
 
 function checkUserLogin() {
@@ -186,6 +265,7 @@ userIcon.addEventListener("click", () => {
 });
 showLoginLink.addEventListener("click", (e) => {
   e.preventDefault();
+
   register.classList.add("hidden");
   login.classList.remove("hidden");
 });
@@ -198,6 +278,8 @@ showRegisterLink.addEventListener("click", (e) => {
 
 document.getElementById("closeRegisterLogin").addEventListener("click", () => {
   registerSection.classList.add("hidden");
+  showHomePage();
+  hidden = true;
   login.classList.add("hidden");
   register.classList.remove("hidden");
 });
@@ -231,8 +313,6 @@ async function addUser(e) {
   }
 
   const updatedUsers = [...currentUsers, user];
-  console.log("Updated users:", updatedUsers);
-  console.log(user);
 
   // Step 3: Send update to bin
   try {
@@ -245,9 +325,9 @@ async function addUser(e) {
       body: JSON.stringify({ users: updatedUsers }),
     });
 
-    alert("User added successfully!");
+    // alert("User added successfully!");
     localStorage.setItem("currentUser", JSON.stringify(user));
-    currentUser = user; // Update current user
+
     isLoggedIn = true;
     loggedInEmail = user.email;
     updateCartCount();
@@ -290,7 +370,7 @@ async function loginUser(e) {
       (u) => u.email === email && u.password === password
     );
     if (foundUser) {
-      alert("Logged in successfully!");
+      // alert("Logged in successfully!");
       // Save in localStorage for future login
       localStorage.setItem("currentUser", JSON.stringify(foundUser));
       isLoggedIn = true;
@@ -340,19 +420,6 @@ function mergeCarts(localCart, serverCart) {
 
 // -----------------------------------------------------------------------------------------------------------------------
 
-// Initialize App
-document.addEventListener("DOMContentLoaded", function () {
-  // localStorage.removeItem("cart");
-  initializeApp();
-  setupEventListeners();
-  checkUserLogin();
-  displayUserName();
-  updateCartCount();
-  if (isLoggedIn) {
-    loadCartFromBin();
-  }
-});
-
 async function loadCartFromBin() {
   if (!isLoggedIn) return;
 
@@ -369,30 +436,12 @@ async function loadCartFromBin() {
       cart = user.cart;
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCartCount();
-      console.log("Cart loaded from bin:", cart);
     }
   } catch (err) {
     console.error("Error loading cart from bin:", err);
   }
 }
 //------------==================================================================================================
-function initializeApp() {
-  showHomePage();
-}
-function setupEventListeners() {
-  document
-    .getElementById("userNameDisplay")
-    .addEventListener("click", handleUserClick);
-  searchInput.addEventListener("input", handleSearch);
-  signupForm.addEventListener("submit", (e) => addUser(e));
-  loginForm.addEventListener("submit", (e) => loginUser(e));
-  document
-    .getElementById("togglePassword")
-    .addEventListener("click", showPassword);
-  cartIcon.addEventListener("click", () => {
-    displayCartInResults();
-  });
-}
 
 // Hide all sections except home page
 //click on logo go back to home page
@@ -557,7 +606,6 @@ async function saveCart() {
         body: JSON.stringify({ users: updatedUsers }),
       });
 
-      console.log("Cart saved to bin for user", loggedInEmail);
       localStorage.setItem("cart", JSON.stringify(cart));
       updateCartCount();
     } catch (err) {
@@ -662,7 +710,6 @@ function displayCartInResults() {
   // Listen for checkout button
   checkoutBtn.addEventListener("click", async () => {
     if (cart.length === 0) {
-      alert("Your cart is empty");
       return;
     }
 
@@ -707,28 +754,62 @@ function showPaymentForm() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+  const currentUserJSON = localStorage.getItem("currentUser");
+
+  // אתחל אובייקט userInfo ריק
+  let userInfo = { fullName: "", address: "" };
+
+  if (currentUserJSON) {
+    try {
+      const user = JSON.parse(currentUserJSON);
+      // מלא את userInfo מהנתונים שקיימים (אם יש)
+      userInfo.fullName = user.fullName || user.name || "";
+      userInfo.address = user.address || "";
+    } catch (e) {
+      console.warn("Error parsing user data:", e);
+    }
+  }
 
   const formHtml = `
-    <div id="paymentForm" >
-      <h3>Payment Details</h3>
-      <label>Full Name:<br><input type="text" id="fullName" required></label><br><br>
-      <label>Phone:<br><input type="tel" id="phone" required></label><br><br>
-      <label>Shipping Address:<br><textarea id="address" rows="3" required></textarea></label><br><br>
-      
-      <h4>Credit Card Details</h4>
-      <label>Card Number:<br><input type="text" id="cardNumber" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" required></label><br><br>
-      <label>Expiry (MM/YY):<br><input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required></label><br><br>
-      <label>CVV:<br><input type="password" id="cvv" maxlength="4" placeholder="123" required></label><br><br>
+  <div id="paymentForm" >
+    <h3>Payment Details</h3>
+    <label>Full Name:<br>
+      <input type="text" id="fullName" required value="${
+        userInfo.fullName || ""
+      }">
+    </label><br><br>
 
-      <p><strong>Total to pay:</strong> $${totalPrice.toFixed(2)}</p>
+    <label>Phone:<br>
+      <input type="tel" id="phone" required value=""}">
+    </label><br><br>
 
-      <button id="payBtn">Pay</button>
-      <button id="cancelPaymentBtn" style="margin-left:10px;">Cancel</button>
-    </div>
-  `;
+    <label>Shipping Address:<br>
+      <textarea id="address" rows="3" required>${
+        userInfo.address || ""
+      }</textarea>
+    </label><br><br>
+    
+    <h4>Credit Card Details</h4>
+    <label>Card Number:<br>
+      <input type="text" id="cardNumber" maxlength="19" placeholder="xxxx xxxx xxxx xxxx" required>
+    </label><br><br>
+
+    <label>Expiry (MM/YY):<br>
+      <input type="text" id="expiry" maxlength="5" placeholder="MM/YY" required>
+    </label><br><br>
+
+    <label>CVV:<br>
+      <input type="password" id="cvv" maxlength="4" placeholder="123" required>
+    </label><br><br>
+
+    <p><strong>Total to pay:</strong> $${totalPrice.toFixed(2)}</p>
+
+    <button id="payBtn">Pay</button>
+    <button id="cancelPaymentBtn" style="margin-left:10px;">Cancel</button>
+  </div>
+`;
 
   resultsDiv.innerHTML = formHtml;
-
   document.getElementById("payBtn").addEventListener("click", () => {
     const name = document.getElementById("fullName").value.trim();
     const phone = document.getElementById("phone").value.trim();
@@ -738,7 +819,7 @@ function showPaymentForm() {
       .value.replace(/\s+/g, "");
     const expiry = document.getElementById("expiry").value.trim();
     const cvv = document.getElementById("cvv").value.trim();
-    console.log("cart", cart);
+
     // Basic validation:
     if (!name || !phone || !address || !cardNumber || !expiry || !cvv) {
       alert("Please fill in all fields");
@@ -760,9 +841,6 @@ function showPaymentForm() {
       return;
     }
 
-    // Here you can add real payment handling
-    console.log("Payment processing with the following details:", cart);
-    // Payment completed - show receipt
     showReceipt({ fullName: name, phone, address }, cart, totalPrice);
   });
 
@@ -781,37 +859,50 @@ function showPaymentForm() {
 
 function showReceipt(userInfo, cartItems, totalPrice) {
   let receiptHtml = `
-    <div id="receipt">
-      <h2>Receipt</h2>
-      <p><strong>Name:</strong> ${
-        userInfo.fullName || loggedInEmail || "Unknown user"
-      }</p>
-      ${
-        userInfo.phone ? `<p><strong>Phone:</strong> ${userInfo.phone}</p>` : ""
-      }
-      ${
-        userInfo.address
-          ? `<p><strong>Address:</strong> ${userInfo.address}</p>`
-          : ""
-      }
-      <hr>
-      <h3>Order Details:</h3>
-      <ul>
-  `;
-  console.log(cartItems);
+  <div id="receipt">
+    <h2>Receipt</h2>
+    <p><strong>Name:</strong> ${
+      userInfo.fullName || loggedInEmail || "Unknown user"
+    }</p>
+    ${userInfo.phone ? `<p><strong>Phone:</strong> ${userInfo.phone}</p>` : ""}
+    ${
+      userInfo.address
+        ? `<p><strong>Address:</strong> ${userInfo.address}</p>`
+        : ""
+    }
+    <hr>
+    <h3>Order Details:</h3>
+    <ul>
+`;
+
   cartItems.forEach((item) => {
-    receiptHtml += `<li>${item.title} - Quantity: ${item.quantity} - Unit Price: $${item.price}</li>`;
+    receiptHtml += `
+    <li>
+      <img src="${item.thumbnail || "placeholder.jpg"}" alt="${item.title}" />
+      <div class="item-info">
+        <span class="item-title">${item.title}</span><br>
+        Quantity: ${item.quantity} - Unit Price: $${item.price}
+      </div>
+    </li>
+  `;
   });
 
   receiptHtml += `
-      </ul>
-      <hr>
-      <p><strong>Total to pay:</strong> $${totalPrice.toFixed(2)}</p>
-      <button id="backToShopBtn">Back to Shop</button>
-    </div>
-  `;
+    </ul>
+    <hr>
+    <p><strong>Total to pay:</strong> $${totalPrice.toFixed(2)}</p>
+    <button id="backToShopBtn">Back to Shop</button>
+    <button id="printReceiptBtn">Print Receipt</button>
+  </div>
+`;
 
   resultsDiv.innerHTML = receiptHtml;
+  cart = [];
+  localStorage.removeItem("cart");
+  updateCartCount();
+  document.getElementById("printReceiptBtn").addEventListener("click", () => {
+    window.print();
+  });
 
   document.getElementById("backToShopBtn").addEventListener("click", () => {
     cart = [];
@@ -890,6 +981,7 @@ function displaySingleProduct(product) {
 
   singleProduct.innerHTML = `
         <div class="product-details-header">
+         <h1>${product.title}</h1>
            <button id="backToResults">⬅ Back</button>
         </div>
         
@@ -1037,15 +1129,23 @@ function showHomePage() {
 
 //-----------------------------------------------------------------------------------------------------------------------
 // click on the menu
-const submenuParents = document.querySelectorAll(".has-submenu");
+const burger = document.querySelector("header nav");
+const categoriesMenu = document.getElementById("categories-menu");
 
-submenuParents.forEach((item) => {
-  item.addEventListener("click", (e) => {
-    // prevent <a> navigation if it has submenu
-    if (e.target.closest(".has-submenu>a")) e.preventDefault();
-    item.classList.toggle("open");
-  });
+burger.addEventListener("click", () => {
+  categoriesMenu.classList.toggle("open");
 });
+document
+  .querySelectorAll("#categories-menu > .menu-item > a")
+  .forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      const menuItem = link.parentElement;
+
+      // Toggle מחלקה active על הפריט
+      menuItem.classList.toggle("active");
+    });
+  });
 
 //------------------------------------------------------------------------------------------------------------------------
 // category links listener
@@ -1053,7 +1153,7 @@ document.querySelectorAll("#categories-menu .submenu a").forEach((link) => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
     const category = link.getAttribute("data-category");
-    console.log("Category clicked:", category);
+
     if (category) {
       loadCategory(category);
     }
@@ -1070,7 +1170,7 @@ categoryBoxes.forEach((box) => {
   box.addEventListener("click", (e) => {
     e.preventDefault();
     const category = box.getAttribute("data-category");
-    console.log("Category clicked:", category);
+
     if (category) {
       loadCategory(category);
     }
@@ -1145,8 +1245,6 @@ document.addEventListener("DOMContentLoaded", () => {
   let current = 0;
   let slides = [];
 
-  const couponCode = "SALE2025";
-
   fetch("https://dummyjson.com/products")
     .then((res) => res.json())
     .then((data) => {
@@ -1154,7 +1252,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const randomProducts = [];
       const usedIndexes = new Set();
 
-      while (randomProducts.length < 4 && usedIndexes.size < products.length) {
+      while (randomProducts.length < 6 && usedIndexes.size < products.length) {
         const randomIndex = Math.floor(Math.random() * products.length);
         if (!usedIndexes.has(randomIndex)) {
           usedIndexes.add(randomIndex);
@@ -1169,7 +1267,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         slide.innerHTML = `
   <div class="ad-slide-content">
+    <div class="ad-slide-img">
     <img src="${product.thumbnail}" alt="${product.title}">
+    </div>
     <div class="ad-slide-text">
       <h4>${product.title}</h4>
       <div class="review-rating">${generateStars(product.rating)}</div>
@@ -1179,9 +1279,7 @@ document.addEventListener("DOMContentLoaded", () => {
 `;
 
         slide.addEventListener("click", () => {
-          console.log("Product clicked:", product);
           displaySingleProduct(product);
-          console.log("Product clicked:");
         });
 
         // הוספת המודעה לדיב

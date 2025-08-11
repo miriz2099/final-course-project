@@ -13,6 +13,8 @@
 </head>
 
 <body>
+
+
     <div class="wrapper">
         <header class="main-header">
 
@@ -33,9 +35,12 @@
 
 
                     </div>
-                    <nav>
-                        <img src="menu.png" alt="Menu" />
-                    </nav>
+                    <div class="icon">
+                        <nav>
+                            <img src="menu.png" alt="Menu" />
+                        </nav>
+                    </div>
+
                 </div>
 
             </div>
@@ -120,20 +125,17 @@
                 <div class="categories-container">
                     <div class="left-categories">
                         <div class="category-box" id="cat-women" data-category="womens-bags">
-                            <!-- <i class="fas fa-female"></i> -->
                             <h3>Women</h3>
                             <p>The style you love</p>
                         </div>
 
                         <div class="category-box" id="cat-men" data-category="mens-shirts">
-                            <!-- <i class="fas fa-tshirt"></i> -->
                             <h3>Men</h3>
                             <p>Latest fashion for men</p>
                         </div>
                     </div>
 
                     <div class="category-right" id="cat-beauty" data-category="beauty">
-                        <!-- <i class="fas fa-spa"></i> -->
                         <h3>Beauty</h3>
                         <p>Beauty and care products</p>
                     </div>
@@ -167,20 +169,20 @@
                         <label for="password">password:</label>
                         <input type="password" id="password" required>
 
-                        <button type="submit">Sign Up</button>
+                        <button type="submit" class="submit-button">Sign Up</button>
                     </form>
 
                     <p>Already registered? <a href="#" id="show-login">Login</a></p>
                 </div>
                 <div id="login" class="hidden">
-
+                    <h2>Login</h2>
                     <form id="login-form">
                         <input type="email" id="loginEmail" placeholder="email" required />
                         <div class="password-wrapper">
                             <input type="password" id="loginPassword" placeholder="password" required />
                             <button type="button" id="togglePassword">Show</button>
                         </div>
-                        <button type="submit">Login</button>
+                        <button type="submit" class="submit-button">Login</button>
                     </form>
 
                     <p>Don't have an account? <a href="#" id="show-register">Sign Up</a></p>
@@ -202,20 +204,42 @@
                 </div>
                 <div class="footer-section">
                     <h3>customer service</h3>
-                    <ul>
-                        <li><a href="#">Return Policy</a></li>
-                        <li><a href="#">FAQ</a></li>
-                        <li><a href="#">Shipping</a></li>
-                        <li><a href="#">Terms of Service</a></li>
+                    <ul id="info-links">
+                        <li>
+                            <a href="#" data-title="Return Policy"
+                                data-text="Our Return Policy allows returns within 30 days with proof of purchase."
+                                data-note="Please keep your receipt for faster processing.">
+                                Return Policy
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" data-title="FAQ" data-text="Find answers to the most common questions here."
+                                data-note="If you can't find an answer, contact support.">
+                                FAQ
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" data-title="Shipping" data-text="We offer free shipping on orders over $50."
+                                data-note="Delivery takes 3-5 business days.">
+                                Shipping
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" data-title="Terms of Service"
+                                data-text="Please read carefully before using our services."
+                                data-note="By using the service, you agree to the terms.">
+                                Terms of Service
+                            </a>
+                        </li>
                     </ul>
                 </div>
                 <div class="footer-section">
                     <h3>Follow Us</h3>
                     <div class="social">
-                        <a href="#"><i class="fab fa-facebook"></i></a>
-                        <a href="#"><i class="fab fa-instagram"></i></a>
-                        <a href="#"><i class="fab fa-twitter"></i></a>
-                        <a href="#"><i class="fab fa-youtube"></i></a>
+                        <i class="fab fa-facebook"></i>
+                        <i class="fab fa-instagram"></i>
+                        <i class="fab fa-twitter"></i>
+                        <i class="fab fa-youtube"></i>
                     </div>
                 </div>
             </div>
