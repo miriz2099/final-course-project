@@ -257,11 +257,12 @@ function checkUserLogin() {
 
 //all about log in and sign up
 userIcon.addEventListener("click", () => {
-  if (!isLoggedIn) {
-    return;
-  } else {
-    showUserProfile();
-  }
+  // if (!isLoggedIn) {
+  //   return;
+  // } else {
+  //
+  // }
+  showUserProfile();
 });
 showLoginLink.addEventListener("click", (e) => {
   e.preventDefault();
